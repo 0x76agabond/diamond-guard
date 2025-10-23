@@ -1,21 +1,21 @@
-# 💎 Diamond as Gnosis Safe Guard (Diamond Guard / Guard Facet)
+# 💎 Diamond as Gnosis Safe Guard (Diamond Guard)
 
-**Gnosis Safe Guard** built on top of the **Diamond Standard (EIP-2535)**.
+`Gnosis Safe Guard` built on top of the `Diamond Standard (EIP-2535)`.
 
 ---
 
 ## Abstract
 
-**Diamond Guard** is a **Safe Smart Account Guard** implemented as a **Facet** within the **Diamond Standard architecture**.  
+`Diamond Guard` is a `Safe Smart Account Guard` implemented as a `Facet` within the `Diamond Standard architecture`.  
 
-Its goal is to create a Guard that is not only secure but also **upgradable and adaptive** — capable of evolving alongside modern exploit patterns.  
+The goal is to create a `Safe Guard` that is not only secure but also **upgradable and adaptive** — capable of evolving alongside modern exploit patterns.  
 Ultimately, it may become a **firewall-like layer** for smart accounts, receiving **security patches just like Windows updates**.  
 
 ---
 
 ## Motivation
 
-I once researched semi-custodial wallet solutions and soon realized that **Gnosis Safe** was a very strong contender.  
+I once researched semi-custodial wallet solutions and soon realized that `Gnosis Safe` was a very strong contender.  
 
 It’s:
 - **Cheaper** than traditional multisig setups.  
@@ -26,12 +26,35 @@ However, on **February 21, 2025**, the **Bybit hack** happened — and it shatte
 The exploit occurred in a way I never imagined possible.  
 
 That incident made me realize something crucial:  
-👉 **Security should be `dynamic`, not static.**
+**Security should be `dynamic`, not `static`.**
 
-In the current Safe model, once a Guard is deployed, **you need multisig approval to remove or replace it**, which slows down incident response.  
-If an exploit happens, redeploying and re-approving a new Guard can take hours — time that attackers don’t need.  
+In the current `Safe` model, once a `Guard` is deployed, **you need multisig approval to remove or replace it**, which slows down incident response.  
+If an exploit happens, redeploying and re-approving a new `Guard` can take hours — time that attackers don’t need.  
 
-With **Diamond Guard**, the Guard itself becomes **modular and upgradeable**.  
-You can patch, extend, or modify its logic **on the fly**, without replacing the entire Guard contract or going through a new multisig approval cycle.  
+With **`Diamond Guard`**, the `Guard` itself becomes **modular and upgradeable**.  
+You can patch, extend, or modify its logic **on the fly**, without replacing the entire `Guard` contract or going through a new multisig approval cycle.  
 
-This architecture enables **real-time reaction** to new vulnerabilities, turning the Guard into a **continuously-evolving firewall** for your Safe.
+This architecture enables **fast reaction** to new vulnerabilities, turning the `Guard` into a **continuously-evolving firewall** for your `Safe`.
+
+---
+
+## Benefits
+
+- **Flexible security model**  
+  Easily adapts to different operational needs — from static `Safe Guards` to dynamic, upgradable defense layers.
+
+- **Supports sophisticated protection logic**  
+  No more 24 KB contract size limit; complex security rules, risk scoring, or modular verifications can all fit inside the `Guard Facet`.
+
+- **No “Safe-bricked” nightmare**  
+  If a `Guard` becomes corrupted or misconfigured, simply detach it and plug in another `Guard` — no redeployment or migration of the entire `Safe` required.
+
+---
+
+## Consideration
+
+- Yes, the `Safe team` decided **not to implement Safe v2 using the Diamond Standard** to maintain consistency across all proxy implementations.  
+  However, since **`Diamond Guard`** is a `Safe Guard`, not the `Safe` itself, **I don’t think I’m a heretic** — this design simply extends the ecosystem without altering the `Safe` core.
+
+- This implementation **could be abused by the `Guard` owner** to manipulate the `Safe`.  
+  To mitigate this risk, it should be implemented with an additional **governance layer** — for example, an **ERC-2767 governance contract** or **another Safe Proxy** responsible for managing `Guard` authorization and upgrades.
