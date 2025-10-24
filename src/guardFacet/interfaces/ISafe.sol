@@ -9,8 +9,7 @@ pragma solidity = 0.8.26;
  * Diamond as Gnosis Safe Guard (Diamond Guard)
  * ===========================================================================
  */
-import {LibSafeGuard} from "./../libraries/LibSafeGuard.sol";
-
+import {LibSafeHandler} from "./../libraries/LibSafeHandler.sol";
 
 interface ISafe {
     event SafeSetup(
@@ -70,7 +69,7 @@ interface ISafe {
         address to,
         uint256 value,
         bytes calldata data,
-        LibSafeGuard.SafeOperation operation,
+        LibSafeHandler.SafeOperation operation,
         uint256 safeTxGas,
         uint256 baseGas,
         uint256 gasPrice,
@@ -86,9 +85,12 @@ interface ISafe {
      * @param data Data payload of module transaction.
      * @param operation Operation type of module transaction.
      */
-    function execTransactionFromModule(address to, uint256 value, bytes memory data, LibSafeGuard.SafeOperation operation)
-        external
-        returns (bool success);
+    function execTransactionFromModule(
+        address to,
+        uint256 value,
+        bytes memory data,
+        LibSafeHandler.SafeOperation operation
+    ) external returns (bool success);
 
     /**
      * @notice Execute `operation` (0: Call, 1: DelegateCall) to `to` with `value` (Native Token) and return data
@@ -99,9 +101,12 @@ interface ISafe {
      * @return success Boolean flag indicating if the call succeeded.
      * @return returnData Data returned by the call.
      */
-    function execTransactionFromModuleReturnData(address to, uint256 value, bytes memory data, LibSafeGuard.SafeOperation operation)
-        external
-        returns (bool success, bytes memory returnData);
+    function execTransactionFromModuleReturnData(
+        address to,
+        uint256 value,
+        bytes memory data,
+        LibSafeHandler.SafeOperation operation
+    ) external returns (bool success, bytes memory returnData);
 
     /**
      * @notice Checks whether the signature provided is valid for the provided data and hash and executor. Reverts otherwise.
@@ -161,7 +166,7 @@ interface ISafe {
         address to,
         uint256 value,
         bytes calldata data,
-        LibSafeGuard.SafeOperation operation,
+        LibSafeHandler.SafeOperation operation,
         uint256 safeTxGas,
         uint256 baseGas,
         uint256 gasPrice,

@@ -11,11 +11,19 @@ pragma solidity = 0.8.26;
  */
 
 library LibSafeGuard {
-    bytes32 constant SAFEGUARD_STORAGE_POSITION = keccak256("independent.middleware.guardfacet.v.0.0.1");    
+    // ERC-8042
+    bytes32 internal constant SAFEGUARD_STORAGE_POSITION = keccak256("diamondguard.system.guardfacet.v.0.0.1");
 
-    enum SafeOperation {
-        Call,
-        DelegateCall
+    struct SafeGuardStorage {
+        mapping(address => uint256) walletNonces;
+        bool isActive;
+        bool isLocked;
     }
 
+    function getStorage() internal pure returns (SafeGuardStorage storage s) {
+        bytes32 pos = SAFEGUARD_STORAGE_POSITION;
+        assembly {
+            s.slot := pos
+        }
+    }
 }

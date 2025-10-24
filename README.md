@@ -57,4 +57,6 @@ This architecture enables **fast reaction** to new vulnerabilities, turning the 
   However, since **`Diamond Guard`** is a `Safe Guard`, not the `Safe` itself, **I don’t think I’m a heretic** — this design simply extends the ecosystem without altering the `Safe` core.
 
 - This implementation **could be abused by the `Guard` owner** to manipulate the `Safe`.  
-  To mitigate this risk, it should be implemented with an additional **governance layer** — for example, an **ERC-2767 governance contract** or **another Safe Proxy** responsible for managing `Guard` authorization and upgrades.
+  To mitigate this risk, it should be implemented with an additional **governance layer** — for example, an **ERC-2767 governance contract** or **another Safe Proxy** to work as owner that take responsible for managing `Guard` authorization and upgrades.
+
+## Architecture
