@@ -39,7 +39,7 @@ This architecture enables **fast reaction** to new vulnerabilities, turning the 
 ---
 
 ## Architecture
-![Architecture](https://drive.usercontent.google.com/download?id=1PS3-wEVBZN-uOKTU-9Qxtz9RAZgezojE&export=view&authuser=0)
+![Architecture](https://drive.usercontent.google.com/download?id=1hP5pY6zkBD6epZq1iE7MDQONWKM1XcpZ&export=view&authuser=0)
 
 
 Each **business domain** has **3 contracts**:
