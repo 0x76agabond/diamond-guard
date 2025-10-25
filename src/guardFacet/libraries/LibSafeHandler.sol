@@ -21,7 +21,7 @@ library LibSafeHandler {
     }
 
     // EIP-712 domain separator
-    function _domainSeparator(address owner) internal view returns (bytes32 sep) {
+    function domainSeparator(address owner) internal view returns (bytes32 sep) {
         uint256 chainId;
         assembly {
             chainId := chainid()
@@ -35,7 +35,37 @@ library LibSafeHandler {
         }
     }
 
-    function _getTransactionHash(
+    function getModuleTransactionHash(
+        address to,
+        uint256 value,
+        bytes memory data,
+        SafeOperation operation,
+        address module
+    ) internal pure returns (bytes32 moduleTxHash) {
+        assembly {
+            // Lấy pointer trống (free memory pointer)
+            let ptr := mload(0x40)
+
+            mstore(ptr, to) // 0x00..0x20
+            mstore(add(ptr, 0x20), value) // 0x20..0x40
+            let dataLen := mload(data)
+            let dataPtr := add(data, 0x20)
+
+            // copy full bytes array (data)
+            for { let i := 0 } lt(i, dataLen) { i := add(i, 0x20) } {
+                mstore(add(add(ptr, 0x40), i), mload(add(dataPtr, i)))
+            }
+            let offsetAfterData := add(add(ptr, 0x40), dataLen)
+            mstore(offsetAfterData, operation)
+            mstore(add(offsetAfterData, 0x20), module)
+
+            // length = 0x20 (to) + 0x20 (value) + dataLen + 0x20 (operation) + 0x20 (module)
+            let totalLen := add(add(add(0x60, dataLen), 0x20), 0x00)
+            moduleTxHash := keccak256(ptr, totalLen)
+        }
+    }
+
+    function getTransactionHash(
         address owner,
         address to,
         uint256 value,
@@ -48,7 +78,7 @@ library LibSafeHandler {
         address refundReceiver,
         uint256 _nonce
     ) internal view returns (bytes32 txHash) {
-        bytes32 domainHash = _domainSeparator(owner);
+        bytes32 domainHash = domainSeparator(owner);
 
         assembly {
             // Get the free memory pointer

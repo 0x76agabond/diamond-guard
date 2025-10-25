@@ -38,6 +38,20 @@ This architecture enables **fast reaction** to new vulnerabilities, turning the 
 
 ---
 
+## Architecture
+![Architecture](https://drive.usercontent.google.com/download?id=1PS3-wEVBZN-uOKTU-9Qxtz9RAZgezojE&export=view&authuser=0)
+
+
+Each **business domain** has **3 contracts**:
+- `Implement Facet` – Implements **business logic** of the specific domain, reading state from the `Library`.  
+
+- `Library` – Defines **const**, **struct**, and implements **ERC-8042** to manage the **identifier** of the business domain.  
+
+- `Setting Facet` – Implements **CRUD operations** to manage the **state of the Library**.  
+  This `Facet` works as a **gateway** to communicate with **off-chain components**.
+
+---
+
 ## Benefits
 
 - **Flexible security model**  
@@ -58,5 +72,3 @@ This architecture enables **fast reaction** to new vulnerabilities, turning the 
 
 - This implementation **could be abused by the `Guard` owner** to manipulate the `Safe`.  
   To mitigate this risk, it should be implemented with an additional **governance layer** — for example, an **ERC-2767 governance contract** or **another Safe Proxy** to work as owner that take responsible for managing `Guard` authorization and upgrades.
-
-## Architecture

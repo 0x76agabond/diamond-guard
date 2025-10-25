@@ -14,11 +14,27 @@ library LibSafeGuard {
     // ERC-8042
     bytes32 internal constant SAFEGUARD_STORAGE_POSITION = keccak256("diamondguard.system.guardfacet.v.0.0.1");
 
-    struct SafeGuardStorage {
-        mapping(address => uint256) walletNonces;
-        bool isActive;
-        bool isLocked;
+    struct TxContext {
+        uint256 nonce;
+        bytes32 txHash;
     }
+
+    // add more attributes here if needed
+
+    struct SafeGuardStorage {
+        mapping(address => TxContext) walletContext;
+        mapping(address => mapping(address => bool)) whitelist;
+        bool isLocked;
+        bool isModuleLocked;
+        bool isActivated;
+        bool isModuleCheckActivated;
+        bool isWhitelistEnabled;
+        bool isEnforceExecutor;
+        bool isDelegateCallAllowed;
+        bool isModuleDelegateCallAllowed;
+    }
+
+    // add more attributes here if needed
 
     function getStorage() internal pure returns (SafeGuardStorage storage s) {
         bytes32 pos = SAFEGUARD_STORAGE_POSITION;

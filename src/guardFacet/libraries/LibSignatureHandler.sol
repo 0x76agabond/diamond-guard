@@ -14,7 +14,7 @@ library LibSignatureHandler {
     uint256 internal constant SIGNATURE_SIZE = 0x41; // 65 bytes
 
     // check if at least there are one signature
-    function _validateSignatures(bytes memory signatures) internal pure {
+    function validateSignatures(bytes memory signatures) internal pure {
         require(signatures.length > 0, "No signatures");
         require(signatures.length % SIGNATURE_SIZE == 0, "Invalid signature format");
     }
@@ -35,7 +35,7 @@ library LibSignatureHandler {
     // recover signer from signature
     // Safe will send verified signature here
     // So we want to recover the signer address from signature
-    function _recoverSigner(bytes32 hash, uint8 v, bytes32 r, bytes32 s) internal pure returns (address signer) {
+    function recoverSigner(bytes32 hash, uint8 v, bytes32 r, bytes32 s) internal pure returns (address signer) {
         if (v == 1 || v == 0) {
             // If v is 1 then it is an approved hash
             // When handling approved hashes the address of the approver is encoded into r
@@ -59,17 +59,17 @@ library LibSignatureHandler {
         }
     }
 
-    function _recoverSignerAccount(bytes32 txHash, bytes memory signatures, address target)
+    function recoverSignerAccount(bytes32 txHash, bytes memory signatures, address target)
         internal
         pure
         returns (bool)
     {
-        _validateSignatures(signatures);
+        validateSignatures(signatures);
 
         // Loop over each signature and recover signer
         for (uint256 i = 0; i < signatures.length; i += SIGNATURE_SIZE) {
             (uint8 v, bytes32 r, bytes32 s_) = signatureSplit(signatures, i);
-            address recovered = _recoverSigner(txHash, v, r, s_);
+            address recovered = recoverSigner(txHash, v, r, s_);
             require(recovered != address(0), "Invalid Owner");
 
             if (recovered == target) {
