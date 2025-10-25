@@ -1,4 +1,4 @@
-# 💎 Diamond as Gnosis Safe Guard (Diamond Guard)
+# Diamond as Gnosis Safe Guard (Diamond Guard)
 
 `Gnosis Safe Guard` built on top of the `Diamond Standard (EIP-2535)`.
 
@@ -39,8 +39,9 @@ This architecture enables **fast reaction** to new vulnerabilities, turning the 
 ---
 
 ## Architecture
-![Architecture](https://drive.usercontent.google.com/download?id=1hP5pY6zkBD6epZq1iE7MDQONWKM1XcpZ&export=view&authuser=0)
+![Architecture](https://drive.usercontent.google.com/download?id=1W7YuP_fMvzMu8hiyhnUNGo4wUjXWJel1&export=view&authuser=0)
 
+I built this template based on the `Diamond Standard`, `Separation of Concerns`, and `Domain-Driven Design (DDD) principles`.
 
 Each **business domain** has **3 contracts**:
 - `Implement Facet` – Implements **business logic** of the specific domain, reading state from the `Library`.  
@@ -49,6 +50,8 @@ Each **business domain** has **3 contracts**:
 
 - `Setting Facet` – Implements **CRUD operations** to manage the **state of the Library**.  
   This `Facet` works as a **gateway** to communicate with **off-chain components**.
+
+👉 With this setup, your codebase **explains itself** — each part is clearly defined yet **interlocks with others like LEGO bricks**, forming a cohesive and understandable architecture.
 
 ---
 
