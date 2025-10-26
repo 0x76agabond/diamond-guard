@@ -10,18 +10,17 @@ pragma solidity = 0.8.26;
  * ===========================================================================
  */
 
-
 import {LibSafeGuard} from ".././libraries/LibSafeGuard.sol";
 import {LibDiamond} from "../../diamond/libraries/LibDiamond.sol";
 import {LibReentrancy} from "../../system/libraries/LibReentrancy.sol";
-contract GuardFacet {
 
+contract GuardFacet {
     // =========================================================
     //                      EVENTS
     // =========================================================
     event ModuleLockedStatusChanged(bool locked);
     event ActivatedStatusChanged(bool activated);
-    event ModuleCheckActivatedChanged(bool activated);    
+    event ModuleCheckActivatedChanged(bool activated);
     event EnforceExecutorChanged(bool enforced);
     event DelegateCallAllowedChanged(bool allowed);
     event ModuleDelegateCallAllowedChanged(bool allowed);
@@ -41,7 +40,7 @@ contract GuardFacet {
 
     function getModuleCheckActivated() external view returns (bool) {
         return LibSafeGuard.getStorage().isModuleCheckActivated;
-    }    
+    }
 
     function getEnforceExecutor() external view returns (bool) {
         return LibSafeGuard.getStorage().isEnforceExecutor;
@@ -59,7 +58,7 @@ contract GuardFacet {
         return LibSafeGuard.getStorage().isWhitelistEnabled;
     }
 
-     function isWhitelisted(address safe, address target) external view returns (bool) {
+    function isWhitelisted(address safe, address target) external view returns (bool) {
         return LibSafeGuard.getStorage().whitelist[safe][target];
     }
 

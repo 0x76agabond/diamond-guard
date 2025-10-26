@@ -96,8 +96,8 @@ contract GuardFacet {
 
         // Gnosis Safe flow is checktransaction -> execTransaction -> checkAfterExecution
         // we store the tx context here for further use in other guards or after execution
-        // if you want to add more data to the context, you can modify the LibSafeGuard.TxContext struct  
-        // add new variables to last of the struct to avoid storage collision  
+        // if you want to add more data to the context, you can modify the LibSafeGuard.TxContext struct
+        // add new variables to last of the struct to avoid storage collision
         LibSafeGuard.TxContext storage context = s.walletContext[safe];
         context.nonce = nonce;
         context.txHash = txHash;
@@ -127,15 +127,15 @@ contract GuardFacet {
             // nonce += 1 before call check transaction, so we need to decrease nonce by 1 to get the correct txHash
             // =========================================================================
             // step 1: encode transaction data
-            // txHashData = encodeTransactionData( ... ); 
+            // txHashData = encodeTransactionData( ... );
             // step 2: increase nonce
-            // nonce++;                      
+            // nonce++;
             // step 3: verify signatures
-            // checkSignatures(txHash, sigs); 
+            // checkSignatures(txHash, sigs);
             // step 4: pre-execution check
-            // guard.checkTransaction(...);   
+            // guard.checkTransaction(...);
             // step 5: execute core tx
-            // success = execute(...);        
+            // success = execute(...);
             // step 6: post-execution check
             // guard.checkAfterExecution(...);
 
@@ -199,7 +199,6 @@ contract GuardFacet {
         LibSafeGuard.TxContext storage context = s.walletContext[msg.sender];
         context.nonce = 0;
         context.txHash = moduleTxHash;
-
 
         emit CheckModuleTransactionSucceeded(msg.sender, moduleTxHash, operation, value, keccak256(data));
     }

@@ -24,7 +24,9 @@ library LibReentrancy {
 
     function getStorage() internal pure returns (ReentrancyStorage storage s) {
         bytes32 slot = SYSTEM_REENTRANCY_STORAGE_POSITION;
-        assembly { s.slot := slot }
+        assembly {
+            s.slot := slot
+        }
     }
 
     function enter() internal {
