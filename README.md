@@ -44,9 +44,9 @@ This architecture enables **fast reaction** to new vulnerabilities, turning the 
 I built this template based on the `Diamond Standard`, `Separation of Concerns`, and `Domain-Driven Design (DDD) principles`.
 
 Each **business domain** has **3 contracts**:
-- `Implement Facet` – Implements **business logic** of the specific domain, reading state from the `Library`.  
+- `Implement Facet` – Implements **business logic** of the specific domain, using state from the `Library`.  
 
-- `Library` – Defines **const**, **struct**, and implements **ERC-8042** to manage the **identifier** of the business domain.  
+- `Library` – Defines **const**, **struct**, **internal function** and implements **ERC-8042** to manage the **identifier** of the business domain.  
 
 - `Setting Facet` – Implements **CRUD operations** to manage the **state of the Library**.  
   This `Facet` works as a **gateway** to communicate with **off-chain components**.
