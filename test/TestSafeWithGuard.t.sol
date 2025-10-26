@@ -12,6 +12,7 @@ pragma solidity = 0.8.26;
 
 import {TestManager} from "./TestManager/TestManager.sol";
 import {NotSafe} from "./NotSafe/NotSafe.sol";
+import {BEP20Token} from "./ERC20/ERC20.sol";
 
 contract TestSafeWithGuard is TestManager {
     // this is a custom implementation of KeySet for testing purpose
