@@ -12,7 +12,7 @@ pragma solidity = 0.8.26;
 
 library LibSafeGuard {
     // ERC-8042
-    bytes32 internal constant SAFEGUARD_STORAGE_POSITION = keccak256("diamondguard.system.guardfacet.v.0.0.1");
+    bytes32 internal constant SAFEGUARD_STORAGE_POSITION = keccak256("diamondguard.service.guardfacet.v.0.0.1");
 
     struct TxContext {
         uint256 nonce;

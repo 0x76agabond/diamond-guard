@@ -10,10 +10,10 @@ pragma solidity = 0.8.26;
  * ===========================================================================
  */
 
-import {ISafe} from "./interfaces/ISafe.sol";
-import {LibSafeGuard} from "./libraries/LibSafeGuard.sol";
-import {LibSafeHandler} from "./libraries/LibSafeHandler.sol";
-import {LibSignatureHandler} from "./libraries/LibSignatureHandler.sol";
+import {ISafe} from ".././interfaces/ISafe.sol";
+import {LibSafeGuard} from ".././libraries/LibSafeGuard.sol";
+import {LibSafeHandler} from ".././libraries/LibSafeHandler.sol";
+import {LibSignatureHandler} from ".././libraries/LibSignatureHandler.sol";
 
 contract GuardFacet {
     // Revert error when safe execution is blocked
@@ -94,12 +94,10 @@ contract GuardFacet {
             }
         }
 
-        // update txhash and nonce for current context
-        // this will allow us to track txhash for each safe individually
-        // if add some logic later, we can check for allowance, limits, etc.
-        // for now, we just update txhash and nonce
-        // idea for counting txs per day address safe => uint256 timestamp => uint256[] nonce // timestamp rotates every 24 hours
-
+        // Gnosis Safe flow is checktransaction -> execTransaction -> checkAfterExecution
+        // we store the tx context here for further use in other guards or after execution
+        // if you want to add more data to the context, you can modify the LibSafeGuard.TxContext struct  
+        // add new variables to last of the struct to avoid storage collision  
         LibSafeGuard.TxContext storage context = s.walletContext[safe];
         context.nonce = nonce;
         context.txHash = txHash;
@@ -124,6 +122,23 @@ contract GuardFacet {
         bytes32 txHash;
         uint256 nonce;
         {
+            // =========================================================================
+            // Gnosis Safe transaction hash calculation flow
+            // nonce += 1 before call check transaction, so we need to decrease nonce by 1 to get the correct txHash
+            // =========================================================================
+            // step 1: encode transaction data
+            // txHashData = encodeTransactionData( ... ); 
+            // step 2: increase nonce
+            // nonce++;                      
+            // step 3: verify signatures
+            // checkSignatures(txHash, sigs); 
+            // step 4: pre-execution check
+            // guard.checkTransaction(...);   
+            // step 5: execute core tx
+            // success = execute(...);        
+            // step 6: post-execution check
+            // guard.checkAfterExecution(...);
+
             ISafe safe = ISafe(payable(msg.sender));
             unchecked {
                 nonce = safe.nonce() - 1;
@@ -179,6 +194,12 @@ contract GuardFacet {
         if (operation == LibSafeHandler.SafeOperation.DelegateCall && !s.isModuleDelegateCallAllowed) {
             revert ModuleDelegateCallBlocked(msg.sender, moduleTxHash, operation);
         }
+
+        // module tx does not have nonce
+        LibSafeGuard.TxContext storage context = s.walletContext[msg.sender];
+        context.nonce = 0;
+        context.txHash = moduleTxHash;
+
 
         emit CheckModuleTransactionSucceeded(msg.sender, moduleTxHash, operation, value, keccak256(data));
     }
