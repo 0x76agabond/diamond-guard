@@ -12,7 +12,7 @@ pragma solidity = 0.8.26;
 
 import {LibSafeGuard} from ".././libraries/LibSafeGuard.sol";
 import {LibDiamond} from "../../diamond/libraries/LibDiamond.sol";
-import {LibReentrancy} from "../../system/libraries/LibReentrancyy.sol";
+import {LibReentrancy} from "../../system/libraries/LibReentrancy.sol";
 
 contract GuardFacet {
     // =========================================================
