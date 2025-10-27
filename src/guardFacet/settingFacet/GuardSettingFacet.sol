@@ -66,82 +66,66 @@ contract GuardFacet {
     //                      SETTERS
     // =========================================================
     function setModuleLockedStatus(bool locked) external {
-        LibReentrancy.enter();
         LibDiamond.enforceIsContractOwner();
         LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
         if (s.isModuleLocked == locked) return;
         s.isModuleLocked = locked;
         emit ModuleLockedStatusChanged(locked);
-        LibReentrancy.exit();
     }
 
     function setActivatedStatus(bool activated) external {
-        LibReentrancy.enter();
         LibDiamond.enforceIsContractOwner();
         LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
         if (s.isActivated == activated) return;
         s.isActivated = activated;
         emit ActivatedStatusChanged(activated);
-        LibReentrancy.exit();
     }
 
     function setModuleCheckActivated(bool activated) external {
-        LibReentrancy.enter();
         LibDiamond.enforceIsContractOwner();
         LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
         if (s.isModuleCheckActivated == activated) return;
         s.isModuleCheckActivated = activated;
         emit ModuleCheckActivatedChanged(activated);
-        LibReentrancy.exit();
     }
 
     function setEnforceExecutor(bool enforced) external {
-        LibReentrancy.enter();
         LibDiamond.enforceIsContractOwner();
         LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
         if (s.isEnforceExecutor == enforced) return;
         s.isEnforceExecutor = enforced;
         emit EnforceExecutorChanged(enforced);
-        LibReentrancy.exit();
     }
 
     function setDelegateCallAllowed(bool allowed) external {
-        LibReentrancy.enter();
         LibDiamond.enforceIsContractOwner();
         LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
         if (s.isDelegateCallAllowed == allowed) return;
         s.isDelegateCallAllowed = allowed;
         emit DelegateCallAllowedChanged(allowed);
-        LibReentrancy.exit();
     }
 
     function setModuleDelegateCallAllowed(bool allowed) external {
-        LibReentrancy.enter();
         LibDiamond.enforceIsContractOwner();
         LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
         if (s.isModuleDelegateCallAllowed == allowed) return;
         s.isModuleDelegateCallAllowed = allowed;
         emit ModuleDelegateCallAllowedChanged(allowed);
-        LibReentrancy.exit();
     }
 
     function setWhitelistEnabled(bool enabled) external {
-        LibReentrancy.enter();
         LibDiamond.enforceIsContractOwner();
         LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
         if (s.isWhitelistEnabled == enabled) return;
         s.isWhitelistEnabled = enabled;
         emit WhitelistStatusChanged(enabled);
-        LibReentrancy.exit();
     }
 
     function updateWhitelist(address safe, address target, bool enabled) external {
-        LibReentrancy.enter();
         LibDiamond.enforceIsContractOwner();
         LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
         if (s.whitelist[safe][target] == enabled) return;
         s.whitelist[safe][target] = enabled;
         emit WhitelistUpdated(safe, target, enabled);
-        LibReentrancy.exit();
     }
 }
