@@ -29,7 +29,7 @@ That incident made me realize something crucial:
 **Security should be `dynamic`, not `static`.**
 
 In the current `Safe` model, once a `Guard` is deployed, **you need multisig approval to remove or replace it**, which slows down incident response.  
-If an exploit happens, redeploying and re-approving a new `Guard` can take hours — time that attackers don’t need.  
+If an exploit happens, redeploying and re-approving a new `Guard` can take hours — time that attackers already have.
 
 With **`Diamond Guard`**, the `Guard` itself becomes **modular and upgradeable**.  
 You can patch, extend, or modify its logic **on the fly**, without replacing the entire `Guard` contract or going through a new multisig approval cycle.  
@@ -137,6 +137,8 @@ Guard Settings Overview
 // Init 
 // ===================================
 {
+  
+
     // Create mock token
     BEP20Token token = new BEP20Token();
 
