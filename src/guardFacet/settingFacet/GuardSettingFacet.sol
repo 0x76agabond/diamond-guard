@@ -14,10 +14,11 @@ import {LibSafeGuard} from ".././libraries/LibSafeGuard.sol";
 import {LibDiamond} from "../../diamond/libraries/LibDiamond.sol";
 import {LibReentrancy} from "../../system/libraries/LibReentrancy.sol";
 
-contract GuardFacet {
+contract GuardSettingFacet {
     // =========================================================
     //                      EVENTS
     // =========================================================
+
     event ModuleLockedStatusChanged(bool locked);
     event ActivatedStatusChanged(bool activated);
     event ModuleCheckActivatedChanged(bool activated);
@@ -28,8 +29,31 @@ contract GuardFacet {
     event WhitelistUpdated(address indexed safe, address indexed target, bool enabled);
 
     // =========================================================
+    //                      INITIALIZER
+    // =========================================================
+
+    function init() external {
+        LibDiamond.enforceIsContractOwner();
+        LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
+        if (s.isInitialized) {
+            revert("GuardSettingFacet: already initialized");
+        }
+
+        s.isInitialized = true;
+        s.isLocked = false;
+        s.isModuleLocked = false;
+        s.isActivated = true;
+        s.isModuleCheckActivated = true;
+        s.isWhitelistEnabled = false;
+        s.isEnforceExecutor = false;
+        s.isDelegateCallAllowed = false;
+        s.isModuleDelegateCallAllowed = false;
+    }
+
+    // =========================================================
     //                      GETTERS
     // =========================================================
+
     function getModuleLockedStatus() external view returns (bool) {
         return LibSafeGuard.getStorage().isModuleLocked;
     }
@@ -65,6 +89,7 @@ contract GuardFacet {
     // =========================================================
     //                      SETTERS
     // =========================================================
+
     function setModuleLockedStatus(bool locked) external {
         LibDiamond.enforceIsContractOwner();
         LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
@@ -121,7 +146,7 @@ contract GuardFacet {
         emit WhitelistStatusChanged(enabled);
     }
 
-    function updateWhitelist(address safe, address target, bool enabled) external {
+    function setWhitelist(address safe, address target, bool enabled) external {
         LibDiamond.enforceIsContractOwner();
         LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
         if (s.whitelist[safe][target] == enabled) return;

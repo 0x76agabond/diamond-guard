@@ -24,6 +24,7 @@ library LibSafeGuard {
     struct SafeGuardStorage {
         mapping(address => TxContext) walletContext;
         mapping(address => mapping(address => bool)) whitelist;
+        bool isInitialized;
         bool isLocked;
         bool isModuleLocked;
         bool isActivated;
