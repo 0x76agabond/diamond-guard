@@ -75,3 +75,136 @@ Each **business domain** has **3 contracts**:
 
 - This implementation **could be abused by the `Guard` owner** to manipulate the `Safe`.  
   To mitigate this risk, it should be implemented with an additional **governance layer** — for example, an **ERC-2767 governance contract** or **another Safe Proxy** to work as owner that take responsible for managing `Guard` authorization and upgrades.
+
+---
+
+Guard Settings Overview
+------------------------------------------------------------
+| Variable                     | Type    | Description |
+|-------------------------------|---------|--------------|
+| `isLocked`                    | bool    | Completely locks the Safe — all transactions are blocked regardless of other settings. |
+| `isModuleLocked`              | bool    | Blocks any transaction executed through a module, regardless of configuration. |
+| `isActivated`                 | bool    | Enables or disables Guard checks for standard (non-module) transactions. |
+| `isModuleCheckActivated`      | bool    | Enables or disables Guard checks for module-based transactions. |
+| `isWhitelistEnabled`          | bool    | Requires every transaction target (`to`) address to be explicitly whitelisted before execution. |
+| `isEnforceExecutor`           | bool    | Enforces that the designated executor must have signed the transaction. |
+| `isDelegateCallAllowed`       | bool    | Allows or blocks `DELEGATECALL` operations for standard transactions. |
+| `isModuleDelegateCallAllowed` | bool    | Allows or blocks `DELEGATECALL` operations for module-based transactions. |
+------------------------------------------------------------
+## Idea
+
+- Each flag operates independently but can stack in effect.  
+- `isLocked` overrides all others (global block).  
+- `isWhitelistEnabled` and `isEnforceExecutor` act as conditional checks layered on top of normal verification flow.  
+---
+## Note
+- To enable the **Diamond** to operate as a full **Safe Guard**, you must **cut in both**  
+  `GuardFacet` **and** `GuardSettingFacet`.  
+  Omitting either facet will disable critical **Guard functionality**.
+
+- Ensure that **all four Guard entry functions** are implemented inside `GuardFacet`:  
+  `checkTransaction`, `checkAfterExecution`, `checkModuleTransaction`, and `checkAfterModuleExecution`.  
+  Missing any of these may cause the **Safe** to become **unstable** or **bricked** depending on which hook is absent.
+
+- This project relies on shared **helper modules** from other repositories.
+
+- **`tContract`**  
+  Source: [**diamond-testing-framework**](https://github.com/0x76agabond/diamond-testing-framework)  
+  Purpose: Provides the **Diamond Testing OOP framework** (`tPrototype`, `tFacet`, and `CutUtil`)  
+  used for **modular facet deployment** and **simulation** in tests.
+
+- **`NotSafe`**  
+  Source: [**mock-safe**](https://github.com/0x76agabond/mock-safe)  
+  Purpose: A **lightweight Gnosis Safe mock** used to **simulate Safe transactions**  
+  and **verify Guard behavior** under controlled **test environments**.
+---
+## Requirements
+- Foundry 
+- Solidity 
+- foundry.toml with `rpc_endpoints`
+---
+## Getting Started
+1. Clone repo  
+2. Run `forge install` (if needed)  
+3. Add `rpc_endpoints`
+4. forge build 
+5. forge test TestSafeWithGuard.t -vvv
+---
+## Example
+``` solidity
+
+// ===================================
+// Init 
+// ===================================
+{
+    // Create mock token
+    BEP20Token token = new BEP20Token();
+
+    DiamondCutFacet cutFacet = new DiamondCutFacet();
+    diamond = new Diamond(address(ks.addrs[4]), address(cutFacet));
+    // Attach loupe facet for introspection
+    CutUtil.cutHelper(diamond, new tDiamondLoupe(), "");
+    // Attach GuardFacet
+    CutUtil.cutHelper(diamond, new tGuardFacet(), "");
+    // Attach GuardSettingFacet and run init()
+    CutUtil.cutHelper(
+        diamond, new tGuardSettingFacet(), abi.encodeWithSelector(IGuardSettingFacet.init.selector)
+    );
+}
+
+// ===================================
+// Enable whitelist requirement
+// ===================================
+{
+  IGuardSettingFacet setting = IGuardSettingFacet(address(diamond));
+  setting.setWhitelistEnabled(true);
+  setting.setWhitelist(address(safeWallet), address(token), true);
+
+  // Register Diamond as Safe Guard
+  safeWallet.setGuard(address(diamond));
+}
+
+// ===================================
+// Build multisig transaction and Execute
+// ===================================
+{
+  // Generate Safe transaction and valid signatures
+  vm.startPrank(ks.addrs[0]);
+  bytes32 txHash = Transaction.getTransactionHash(
+      address(safeWallet),
+      address(token),
+      0,
+      abi.encodeWithSelector(token.transfer.selector, ks.addrs[4], 1e18),
+      Enum.Operation.Call,
+      0,
+      0,
+      0,
+      address(0),
+      address(0),
+      safeWallet.nonce()
+  );
+
+  bytes memory sig1 = generateSignature(txHash, ks.keys[1]);
+  bytes memory sig2 = generateSignature(txHash, ks.keys[2]);
+  bytes memory sigs = bytes.concat(sig1, sig2);
+
+  // Execute Safe transaction and expect success
+  try safeWallet.execTransaction(
+      address(token),
+      0,
+      abi.encodeWithSelector(token.transfer.selector, ks.addrs[4], 1e18),
+      Enum.Operation.Call,
+      0,
+      0,
+      0,
+      address(0),
+      payable(address(0)),
+      sigs
+  ) returns (bool success) {
+      console.log("Transaction success as expected:", success);
+  } catch Error(string memory reason) {
+      console.log("Transaction failed:", reason);
+  }
+}
+        
+```

@@ -19,7 +19,7 @@ library LibSafeGuard {
         bytes32 txHash;
     }
 
-    // add more attributes here if needed
+    // add more attributes to the last position of TxContext if need to extend context
 
     struct SafeGuardStorage {
         mapping(address => TxContext) walletContext;
@@ -35,7 +35,7 @@ library LibSafeGuard {
         bool isModuleDelegateCallAllowed;
     }
 
-    // add more attributes here if needed
+    // add more attributes to the last position of SafeGuardStorage if need to add more feature
 
     function getStorage() internal pure returns (SafeGuardStorage storage s) {
         bytes32 pos = SAFEGUARD_STORAGE_POSITION;
