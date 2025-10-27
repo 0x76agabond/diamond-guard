@@ -196,7 +196,7 @@ contract TestSafeWithGuard is TestManager {
         console.log("Check Current Setting ");
         console.log("is Guard activated", setting.getActivatedStatus());
         console.log("is Module Guard activated", setting.getModuleCheckActivated());
-        console.log("is whitelist require", setting.getWhitelistEnabled());    
+        console.log("is whitelist require", setting.getWhitelistEnabled());
 
         // Enable whitelist requirement
         console.log("================================= ");
@@ -265,7 +265,7 @@ contract TestSafeWithGuard is TestManager {
             console.log("Transaction reverted as expected with custom error");
             console.logBytes(bytes_reason);
         }
-        
+
         vm.stopPrank();
     }
 
@@ -319,8 +319,8 @@ contract TestSafeWithGuard is TestManager {
             console.log("Transaction success as expected:", success);
         } catch Error(string memory reason) {
             console.log("Transaction failed:", reason);
-        } 
-        
+        }
+
         vm.stopPrank();
     }
 }
