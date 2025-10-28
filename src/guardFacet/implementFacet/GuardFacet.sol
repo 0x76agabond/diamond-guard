@@ -16,7 +16,6 @@ import {LibSafeHandler} from ".././libraries/LibSafeHandler.sol";
 import {LibSignatureHandler} from ".././libraries/LibSignatureHandler.sol";
 
 contract GuardFacet {
-    
     // Every guarded tx (success or fail) emits events for off-chain indexing.
     // If there are a transaction executed unexpectedly, you can immediately know from the event logs
     // Turn on islocked / isModuleLocked will block all transactions through this guard

@@ -12,9 +12,9 @@ pragma solidity = 0.8.26;
 
 library LibSafeGuard {
     // ERC-8042
-    // I'm an independent researcher so no {org}
-    // this is {project}.{domain_type}.{domain.tolower()}.{version}
-    bytes32 internal constant SAFEGUARD_STORAGE_POSITION = keccak256("diamondguard.business.guardfacet.v.0.0.1");
+    // I'm an independent researcher so leave {org} as "eth"
+    // this is {org}.{project}.{domain_type}.{domain (lowercase)}.{version}
+    bytes32 internal constant SAFEGUARD_STORAGE_POSITION = keccak256("eth.diamondguard.business.guardfacet.v0.0.1");
 
     struct TxContext {
         uint256 nonce;
