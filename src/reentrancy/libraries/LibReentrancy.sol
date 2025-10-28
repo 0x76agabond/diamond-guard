@@ -12,7 +12,10 @@ pragma solidity = 0.8.26;
 
 library LibReentrancy {
     // ERC-8042
-    bytes32 internal constant SYSTEM_REENTRANCY_STORAGE_POSITION = keccak256("diamondguard.system.reentrancy.v0.0.0.1");
+    // I'm an independent researcher so leave {org} as "eth"
+    // this is {org}.{project}.{domain_type}.{domain (lowercase)}.{version}
+    bytes32 internal constant SYSTEM_REENTRANCY_STORAGE_POSITION =
+        keccak256("eth.diamondguard.system.reentrancy.v0.0.0.1");
     uint256 internal constant _NOT_ENTERED = 1;
     uint256 internal constant _ENTERED = 2;
 
