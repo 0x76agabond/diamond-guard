@@ -35,34 +35,15 @@ library LibSafeHandler {
         }
     }
 
+    // moduleTxHash = keccak256(abi.encodePacked(to, value, data, operation, module));
     function getModuleTransactionHash(
         address to,
         uint256 value,
         bytes memory data,
-        SafeOperation operation,
+        LibSafeHandler.SafeOperation operation,
         address module
     ) internal pure returns (bytes32 moduleTxHash) {
-        assembly {
-            // Lấy pointer trống (free memory pointer)
-            let ptr := mload(0x40)
-
-            mstore(ptr, to) // 0x00..0x20
-            mstore(add(ptr, 0x20), value) // 0x20..0x40
-            let dataLen := mload(data)
-            let dataPtr := add(data, 0x20)
-
-            // copy full bytes array (data)
-            for { let i := 0 } lt(i, dataLen) { i := add(i, 0x20) } {
-                mstore(add(add(ptr, 0x40), i), mload(add(dataPtr, i)))
-            }
-            let offsetAfterData := add(add(ptr, 0x40), dataLen)
-            mstore(offsetAfterData, operation)
-            mstore(add(offsetAfterData, 0x20), module)
-
-            // length = 0x20 (to) + 0x20 (value) + dataLen + 0x20 (operation) + 0x20 (module)
-            let totalLen := add(add(add(0x60, dataLen), 0x20), 0x00)
-            moduleTxHash := keccak256(ptr, totalLen)
-        }
+        moduleTxHash = keccak256(abi.encodePacked(to, value, data, operation, module));
     }
 
     function getTransactionHash(

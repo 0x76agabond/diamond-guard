@@ -16,6 +16,21 @@ import {LibSafeHandler} from ".././libraries/LibSafeHandler.sol";
 import {LibSignatureHandler} from ".././libraries/LibSignatureHandler.sol";
 
 contract GuardFacet {
+    
+    // Every guarded tx (success or fail) emits events for off-chain indexing.
+    // If there are a transaction executed unexpectedly, you can immediately know from the event logs
+    // Turn on islocked / isModuleLocked will block all transactions through this guard
+    // You can bricked all the Safe wallets using this guard in case of emergency
+
+    // Another useful feature is whitelist
+    // You can enable whitelist to restrict the 'to' address of the transaction
+    // Only the 'to' address in the whitelist can be executed
+    // This feature is useful for Bybit case since the attacker can't add new 'to' address to steal funds
+
+    // This is just a POC implementation, you can extend more features as your need
+    // In my case, I probably add daily count and amount limit for each wallet for daily spending
+    // Force to use whitelist and executor signature for unlimited transaction
+
     // Revert error when safe execution is blocked
     error SafeExecutionBlocked(address safe, uint256 nonce, bytes32 txHash);
     error SafeModuleExecutionBlocked(address safe);
@@ -207,8 +222,10 @@ contract GuardFacet {
     function checkAfterModuleExecution(bytes32 txHash, bool success) external {
         LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
 
-        if (s.isModuleCheckActivated) {
-            emit CheckModuleAfterExecutionSucceeded(msg.sender, txHash, success);
+        if (!s.isModuleCheckActivated) {
+            return;
         }
+
+        emit CheckModuleAfterExecutionSucceeded(msg.sender, txHash, success);
     }
 }

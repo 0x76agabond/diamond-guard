@@ -12,7 +12,6 @@ pragma solidity = 0.8.26;
 
 import {LibSafeGuard} from ".././libraries/LibSafeGuard.sol";
 import {LibDiamond} from "../../diamond/libraries/LibDiamond.sol";
-import {LibReentrancy} from "../../system/libraries/LibReentrancy.sol";
 
 contract GuardSettingFacet {
     // =========================================================
@@ -27,6 +26,13 @@ contract GuardSettingFacet {
     event ModuleDelegateCallAllowedChanged(bool allowed);
     event WhitelistStatusChanged(bool enabled);
     event WhitelistUpdated(address indexed safe, address indexed target, bool enabled);
+
+    // =========================================================
+    //                      ERRORS
+    // =========================================================
+
+    error SafeAddressZero();
+    error WhitelistAddressZero();
 
     // =========================================================
     //                      INITIALIZER
@@ -147,6 +153,14 @@ contract GuardSettingFacet {
     }
 
     function setWhitelist(address safe, address target, bool enabled) external {
+        if (safe == address(0)) {
+            revert SafeAddressZero();
+        }
+
+        if (target == address(0)) {
+            revert WhitelistAddressZero();
+        }
+
         LibDiamond.enforceIsContractOwner();
         LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
         if (s.whitelist[safe][target] == enabled) return;

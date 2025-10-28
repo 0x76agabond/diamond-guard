@@ -98,6 +98,10 @@ Guard Settings Overview
 - `isWhitelistEnabled` and `isEnforceExecutor` act as conditional checks layered on top of normal verification flow.  
 ---
 ## Note
+- This is a **PoC** for architecture showcase.
+  **You may need to refine** it before using it in production.
+  See the **top comment** in `src/guardFacet/implementFacet/GuardFacet.sol` for details.
+
 - To enable the **Diamond** to operate as a full **Safe Guard**, you must **cut in both**  
   `GuardFacet` **and** `GuardSettingFacet`.  
   Omitting either facet will disable critical **Guard functionality**.
