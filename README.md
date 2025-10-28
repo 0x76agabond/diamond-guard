@@ -110,7 +110,7 @@ Guard Settings Overview
   `checkTransaction`, `checkAfterExecution`, `checkModuleTransaction`, and `checkAfterModuleExecution`.  
   Missing any of these may cause the **Safe** to become **unstable** or **bricked** depending on which hook is absent.
 
-- This project relies on shared **helper modules** from other repositories.
+- This project relies on shared **helper modules** from other repositories for testing.
 
 - **`tContract`**  
   Source: [**diamond-testing-framework**](https://github.com/0x76agabond/diamond-testing-framework)  
