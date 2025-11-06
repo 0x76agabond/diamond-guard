@@ -16,16 +16,7 @@ library LibSafeGuard {
     // this is {org}.{project}.{domain_type}.{domain (lowercase)}.{version}
     bytes32 internal constant SAFEGUARD_STORAGE_POSITION = keccak256("eth.diamondguard.business.guardfacet.v0.0.1");
 
-    struct TxContext {
-        uint256 nonce;
-        bytes32 txHash;
-    }
-
-    // add more attributes to the last position of TxContext if need to extend context
-
     struct SafeGuardStorage {
-        mapping(address => TxContext) walletContext;
-        mapping(address => mapping(address => bool)) whitelist;
         bool isInitialized;
         bool isLocked;
         bool isModuleLocked;
@@ -35,6 +26,7 @@ library LibSafeGuard {
         bool isEnforceExecutor;
         bool isDelegateCallAllowed;
         bool isModuleDelegateCallAllowed;
+        mapping(address => mapping(address => bool)) whitelist;
     }
 
     // add more attributes to the last position of SafeGuardStorage if need to add more feature

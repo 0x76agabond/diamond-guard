@@ -9,10 +9,12 @@ pragma solidity = 0.8.26;
  * Diamond as Gnosis Safe Guard (Diamond Guard)
  * ===========================================================================
  */
-
+import "forge-std/console2.sol";
+import "forge-std/console.sol";
 import {ISafe} from ".././interfaces/ISafe.sol";
 import {LibSafeGuard} from ".././libraries/LibSafeGuard.sol";
 import {LibSafeHandler} from ".././libraries/LibSafeHandler.sol";
+import {LibContext} from "../../guardContext/libraries/LibContext.sol";
 import {LibSignatureHandler} from ".././libraries/LibSignatureHandler.sol";
 
 contract GuardFacet {
@@ -110,11 +112,11 @@ contract GuardFacet {
 
         // Gnosis Safe flow is checktransaction -> execTransaction -> checkAfterExecution
         // we store the tx context here for further use in other guards or after execution
-        // if you want to add more data to the context, you can modify the LibSafeGuard.TxContext struct
-        // add new variables to last of the struct to avoid storage collision
-        LibSafeGuard.TxContext storage context = s.walletContext[safe];
-        context.nonce = nonce;
-        context.txHash = txHash;
+        // if you want to add more data to the context, you can modify LibContext struct
+        // you should check the file for pattern
+
+        LibContext.setNonce(nonce);
+        LibContext.setTxHash(txHash);
 
         emit CheckTransactionSucceeded(safe, nonce, txHash, operation, value, keccak256(data));
     }
@@ -174,6 +176,10 @@ contract GuardFacet {
             return;
         }
 
+        // this is how you retrieve context data
+        // bytes32 contextTxHash = LibContext.getTxHash();
+        // uint256 contextInt = LibContext.getNonce();
+
         emit CheckAfterExecutionSucceeded(msg.sender, txHash, success);
     }
 
@@ -200,7 +206,7 @@ contract GuardFacet {
         // if whitelist is enabled, check if the 'to' address is in the whitelist
         if (s.isWhitelistEnabled) {
             if (!s.whitelist[msg.sender][to]) {
-                revert WhitelistRequired(msg.sender, s.walletContext[msg.sender].nonce, moduleTxHash, to);
+                revert WhitelistRequired(msg.sender, LibContext.getNonce(), moduleTxHash, to);
             }
         }
 
@@ -210,9 +216,8 @@ contract GuardFacet {
         }
 
         // module tx does not have nonce
-        LibSafeGuard.TxContext storage context = s.walletContext[msg.sender];
-        context.nonce = 0;
-        context.txHash = moduleTxHash;
+        LibContext.setNonce(0);
+        LibContext.setTxHash(moduleTxHash);
 
         emit CheckModuleTransactionSucceeded(msg.sender, moduleTxHash, operation, value, keccak256(data));
     }
