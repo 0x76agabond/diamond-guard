@@ -9,8 +9,7 @@ pragma solidity = 0.8.26;
  * Diamond as Gnosis Safe Guard (Diamond Guard)
  * ===========================================================================
  */
-import "forge-std/console2.sol";
-import "forge-std/console.sol";
+
 import {ISafe} from ".././interfaces/ISafe.sol";
 import {LibSafeGuard} from ".././libraries/LibSafeGuard.sol";
 import {LibSafeHandler} from ".././libraries/LibSafeHandler.sol";
@@ -28,8 +27,8 @@ contract GuardFacet {
     // Only the 'to' address in the whitelist can be executed
     // This feature is useful for Bybit case since the attacker can't add new 'to' address to steal funds
 
-    // This is just a POC implementation, you can extend more features as your need
-    // In my case, I probably add daily count and amount limit for each wallet for daily spending
+    // This is just a PoC implementation, you can extend more features as your need
+    // In my case, I probably add daily tx count and amount limit for each wallet for daily spending
     // Force to use whitelist and executor signature for unlimited transaction
 
     // Revert error when safe execution is blocked

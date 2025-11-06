@@ -12,8 +12,8 @@ pragma solidity = 0.8.26;
 
 library LibContext {
     // EIP-1153
-    int256 internal constant SLOT_NONCE = 0;
-    int256 internal constant SLOT_TXHASH = 1;
+    uint256 internal constant SLOT_NONCE = 0;
+    uint256 internal constant SLOT_TXHASH = 1;
 
     // Safe workflow
     // checkTransaction (Guard) => executeTransaction (Safe) => checkAfterExecution (Guard)
