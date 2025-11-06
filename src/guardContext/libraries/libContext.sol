@@ -12,6 +12,7 @@ pragma solidity = 0.8.26;
 
 library LibContext {
     // EIP-1153
+    // Storage slots for context data
     uint256 internal constant SLOT_NONCE = 0;
     uint256 internal constant SLOT_TXHASH = 1;
 
