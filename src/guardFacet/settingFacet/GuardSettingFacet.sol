@@ -1,4 +1,4 @@
-pragma solidity = 0.8.26;
+pragma solidity =0.8.30;
 // SPDX-License-Identifier: MIT
 
 /*
@@ -33,6 +33,7 @@ contract GuardSettingFacet {
 
     error SafeAddressZero();
     error WhitelistAddressZero();
+    error GuardInitialized(address guardAddress);
 
     // =========================================================
     //                      INITIALIZER
@@ -42,7 +43,7 @@ contract GuardSettingFacet {
         LibDiamond.enforceIsContractOwner();
         LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
         if (s.isInitialized) {
-            revert("GuardSettingFacet: already initialized");
+            revert GuardInitialized(address(this));
         }
 
         s.isInitialized = true;
@@ -59,6 +60,10 @@ contract GuardSettingFacet {
     // =========================================================
     //                      GETTERS
     // =========================================================
+
+    function getLockedStatus() external view returns (bool) {
+        return LibSafeGuard.getStorage().isLocked;
+    }
 
     function getModuleLockedStatus() external view returns (bool) {
         return LibSafeGuard.getStorage().isModuleLocked;

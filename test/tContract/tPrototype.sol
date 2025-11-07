@@ -25,9 +25,7 @@ abstract contract tPrototype is Test {
     function baseCut(address facet) internal view returns (IDiamondCut.FacetCut[] memory) {
         IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](1);
         cut[0] = IDiamondCut.FacetCut({
-            facetAddress: facet,
-            action: IDiamondCut.FacetCutAction.Add,
-            functionSelectors: selectors
+            facetAddress: facet, action: IDiamondCut.FacetCutAction.Add, functionSelectors: selectors
         });
 
         return cut;

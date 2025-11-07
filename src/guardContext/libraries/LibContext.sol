@@ -1,4 +1,4 @@
-pragma solidity = 0.8.26;
+pragma solidity >=0.8.30;
 // SPDX-License-Identifier: MIT
 
 /*
@@ -15,6 +15,7 @@ library LibContext {
     // Storage slots for context data
     uint256 internal constant SLOT_NONCE = 0;
     uint256 internal constant SLOT_TXHASH = 1;
+    uint256 internal constant SLOT_TX_TYPE = 2;
 
     // Safe workflow
     // checkTransaction (Guard) => executeTransaction (Safe) => checkAfterExecution (Guard)
@@ -35,6 +36,14 @@ library LibContext {
         }
     }
 
+    // 0 = normal tx
+    // 1 = module tx
+    function getTxType() internal view returns (uint256 v) {
+        assembly {
+            v := tload(SLOT_TXHASH)
+        }
+    }
+
     //  Setters
     function setNonce(uint256 v) internal {
         assembly {
@@ -45,6 +54,12 @@ library LibContext {
     function setTxHash(bytes32 v) internal {
         assembly {
             tstore(SLOT_TXHASH, v)
+        }
+    }
+
+    function setTxType(uint256 v) internal {
+        assembly {
+            tstore(SLOT_TX_TYPE, v)
         }
     }
 }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-/**
+/*
  * \
  * Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
  * EIP-2535 Diamonds: https://eips.ethereum.org/EIPS/eip-2535
@@ -21,9 +21,7 @@ contract Diamond {
         bytes4[] memory functionSelectors = new bytes4[](1);
         functionSelectors[0] = IDiamondCut.diamondCut.selector;
         cut[0] = IDiamondCut.FacetCut({
-            facetAddress: _diamondCutFacet,
-            action: IDiamondCut.FacetCutAction.Add,
-            functionSelectors: functionSelectors
+            facetAddress: _diamondCutFacet, action: IDiamondCut.FacetCutAction.Add, functionSelectors: functionSelectors
         });
         LibDiamond.diamondCut(cut, address(0), "");
     }

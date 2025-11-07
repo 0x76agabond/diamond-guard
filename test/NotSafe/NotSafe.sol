@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-/**
+/*
  * \
  * Author: Hoang <ginz1504@gmail.com>
  * Contact: https://github.com/0x76agabond
@@ -162,19 +162,20 @@ contract NotSafe {
         }
 
         if (guardAddress != address(0)) {
-            ITransactionGuard(guardAddress).checkTransaction(
-                to,
-                value,
-                data,
-                operation,
-                safeTxGas,
-                baseGas,
-                gasPrice,
-                gasToken,
-                refundReceiver,
-                signatures,
-                msg.sender
-            );
+            ITransactionGuard(guardAddress)
+                .checkTransaction(
+                    to,
+                    value,
+                    data,
+                    operation,
+                    safeTxGas,
+                    baseGas,
+                    gasPrice,
+                    gasToken,
+                    refundReceiver,
+                    signatures,
+                    msg.sender
+                );
         }
 
         // exec transaction here

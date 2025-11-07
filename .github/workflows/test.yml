@@ -17,10 +17,10 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Foundry v1.3.5-stable manually
+      - name: Install Foundry v1.4.4-stable manually
         run: |
-          wget https://github.com/foundry-rs/foundry/releases/download/v1.3.5/foundry_v1.3.5_linux_amd64.tar.gz
-          tar -xzf foundry_v1.3.5_linux_amd64.tar.gz
+          wget https://github.com/foundry-rs/foundry/releases/download/v1.4.4/foundry_v1.4.4_linux_amd64.tar.gz
+          tar -xzf foundry_v1.4.4_linux_amd64.tar.gz
           sudo mv forge cast anvil chisel /usr/local/bin/
           forge --version
 

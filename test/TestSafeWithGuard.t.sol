@@ -1,4 +1,4 @@
-pragma solidity = 0.8.26;
+pragma solidity >=0.8.30;
 // SPDX-License-Identifier: MIT
 
 /*
@@ -257,7 +257,9 @@ contract TestSafeWithGuard is TestManager {
             address(0),
             payable(address(0)),
             sigs
-        ) returns (bool success) {
+        ) returns (
+            bool success
+        ) {
             console.log("Test fail, token wasn't added:", success);
         } catch Error(string memory reason) {
             console.log("Transaction failed as expected due to whitelist restriction:", reason);
@@ -315,7 +317,9 @@ contract TestSafeWithGuard is TestManager {
             address(0),
             payable(address(0)),
             sigs
-        ) returns (bool success) {
+        ) returns (
+            bool success
+        ) {
             console.log("Transaction success as expected:", success);
         } catch Error(string memory reason) {
             console.log("Transaction failed:", reason);

@@ -1,4 +1,4 @@
-pragma solidity = 0.8.26;
+pragma solidity >=0.8.30;
 // SPDX-License-Identifier: MIT
 
 /*
@@ -114,6 +114,7 @@ contract GuardFacet {
         // if you want to add more data to the context, you can modify LibContext struct
         // you should check the file for pattern
 
+        LibContext.setTxType(0); // normal tx
         LibContext.setNonce(nonce);
         LibContext.setTxHash(txHash);
 
@@ -215,6 +216,7 @@ contract GuardFacet {
         }
 
         // module tx does not have nonce
+        LibContext.setTxType(1); // module tx
         LibContext.setNonce(0);
         LibContext.setTxHash(moduleTxHash);
 

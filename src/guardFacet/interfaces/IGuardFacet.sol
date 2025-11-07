@@ -1,4 +1,4 @@
-pragma solidity =0.8.26;
+pragma solidity >=0.8.30;
 // SPDX-License-Identifier: MIT
 
 /*
@@ -7,7 +7,7 @@ pragma solidity =0.8.26;
  * Contact: https://github.com/0x76agabond
  * ===========================================================================
  * Interface: IGuardFacet
- * Description: 
+ * Description:
  *   Diamond Guard interface for Gnosis Safe-compatible Guard Facet.
  *   Defines the required hooks and events used by Gnosis Safe or any Safe-like
  *   modular account to validate transactions before and after execution.
