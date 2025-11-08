@@ -158,6 +158,8 @@ contract GuardSettingFacet {
     }
 
     function setWhitelist(address safe, address target, bool enabled) external {
+        LibDiamond.enforceIsContractOwner();
+        
         if (safe == address(0)) {
             revert SafeAddressZero();
         }
@@ -166,7 +168,6 @@ contract GuardSettingFacet {
             revert WhitelistAddressZero();
         }
 
-        LibDiamond.enforceIsContractOwner();
         LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
         if (s.whitelist[safe][target] == enabled) return;
         s.whitelist[safe][target] = enabled;
