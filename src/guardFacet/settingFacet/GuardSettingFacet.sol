@@ -159,7 +159,7 @@ contract GuardSettingFacet {
 
     function setWhitelist(address safe, address target, bool enabled) external {
         LibDiamond.enforceIsContractOwner();
-        
+
         if (safe == address(0)) {
             revert SafeAddressZero();
         }
