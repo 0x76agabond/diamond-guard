@@ -174,28 +174,23 @@ contract GuardSettingFacet {
         emit WhitelistUpdated(safe, target, enabled);
     }
 
-    function setWhitelistBatch(
-        address safe,
-        address[] calldata targets,
-        bool enabled
-    ) external {
+    function setWhitelistBatch(address safe, address[] calldata targets, bool enabled) external {
         LibDiamond.enforceIsContractOwner();
-        
+
         if (safe == address(0)) {
             revert SafeAddressZero();
         }
 
         LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
-        for (uint i; i < targets.length; i++) {
-
+        for (uint256 i; i < targets.length; i++) {
             if (targets[i] == address(0)) {
                 revert WhitelistAddressZero();
             }
-            
+
             if (s.whitelist[safe][targets[i]] != enabled) {
                 s.whitelist[safe][targets[i]] = enabled;
                 emit WhitelistUpdated(safe, targets[i], enabled);
             }
-        }    
+        }
     }
 }
