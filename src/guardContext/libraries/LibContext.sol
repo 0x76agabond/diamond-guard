@@ -40,7 +40,7 @@ library LibContext {
     // 1 = module tx
     function getTxType() internal view returns (uint256 v) {
         assembly {
-            v := tload(SLOT_TXHASH)
+            v := tload(SLOT_TX_TYPE)
         }
     }
 
