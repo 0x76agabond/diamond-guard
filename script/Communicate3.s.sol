@@ -6,10 +6,10 @@ import "forge-std/Script.sol";
 import {IDiamondCut} from "../src/diamond/interfaces/IDiamondCut.sol";
 import {IDiamondLoupe} from "../src/diamond/interfaces/IDiamondLoupe.sol";
 import {Diamond} from "../src/diamond/Diamond.sol";
-import {GuardSettingFacet} from "../src/guardFacet/settingFacet/GuardSettingFacet.sol";
-import {IGuardSettingFacet} from "../src/guardFacet/interfaces/IGuardSettingFacet.sol";
+import {GuardFacetAllowance} from "../src/guardFacet/implementFacet/GuardFacetAllowance.sol";
+import {IGuardFacet} from "../src/guardFacet/interfaces/IGuardFacet.sol";
 
-contract Communicate2 is Script {
+contract Communicate3 is Script {
     function run() external {
         uint256 key_manager = vm.envUint("PRIVATE_KEY");
         address manager = vm.addr(key_manager);
@@ -21,21 +21,18 @@ contract Communicate2 is Script {
 
         {
 
-            GuardSettingFacet guardsettingFacet = new GuardSettingFacet();
-            bytes4[] memory selectors = new bytes4[](1);
+            GuardFacetAllowance guardFacet = new GuardFacetAllowance();
+            bytes4[] memory selectors = new bytes4[](4);
 
-            uint256 i;
-
-            //
-            //  GETTERS
-            //
-            //selectors[i++] = IGuardSettingFacet.setLockedStatus.selector;
-            selectors[i++] = IGuardSettingFacet.getLockedStatus.selector;
+            selectors[0] = IGuardFacet.checkTransaction.selector;
+            selectors[1] = IGuardFacet.checkAfterExecution.selector;
+            selectors[2] = IGuardFacet.checkModuleTransaction.selector;
+            selectors[3] = IGuardFacet.checkAfterModuleExecution.selector;
 
             IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](1);
             cut[0] = IDiamondCut.FacetCut({
-                facetAddress: address(guardsettingFacet),
-                action: IDiamondCut.FacetCutAction.Add,
+                facetAddress: address(guardFacet),
+                action: IDiamondCut.FacetCutAction.Replace,
                 functionSelectors: selectors
             });
 
@@ -47,7 +44,7 @@ contract Communicate2 is Script {
                 console.log(address(facets[index]));
             }
 
-            bytes4[] memory selectors2 = IDiamondLoupe(diamond).facetFunctionSelectors(address(guardsettingFacet));
+            bytes4[] memory selectors2 = IDiamondLoupe(diamond).facetFunctionSelectors(address(guardFacet));
 
             console.log("FuntionSelector");
             for (uint256 index; index < selectors2.length; index++) {
