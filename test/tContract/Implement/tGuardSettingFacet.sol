@@ -2,9 +2,6 @@
 
 /*
 /// Author: Hoang <ginz1504@gmail.com>
-/// Contact: https://github.com/0x76agabond
-/// =============================================================================
-/// Diamond Testing via OOP (DTO)
 */
 
 pragma solidity ^0.8.26;
@@ -16,26 +13,23 @@ import {GuardSettingFacet} from "../../../src/guardFacet/settingFacet/GuardSetti
 import {tPrototype} from "../tPrototype.sol";
 
 contract tGuardSettingFacet is tPrototype {
-    // =========================================================
-    //                        FIELDS
-    // =========================================================
     GuardSettingFacet public facet;
 
-    // =========================================================
-    //                        SETUP
-    // =========================================================
     function setUp() public override {
-        // Instantiate implementation
         facet = new GuardSettingFacet();
 
-        // Collect function selectors from IGuardSettingFacet
         uint256 i;
-        selectors = new bytes4[](17);
+        selectors = new bytes4[](23);
 
-        // Initializer
+        //
+        //  INITIALIZER
+        //
         selectors[i++] = IGuardSettingFacet.init.selector;
 
-        // Getters
+        //
+        //  GETTERS
+        //
+        selectors[i++] = IGuardSettingFacet.getModuleLockedStatus.selector;
         selectors[i++] = IGuardSettingFacet.getModuleLockedStatus.selector;
         selectors[i++] = IGuardSettingFacet.getActivatedStatus.selector;
         selectors[i++] = IGuardSettingFacet.getModuleCheckActivated.selector;
@@ -45,7 +39,12 @@ contract tGuardSettingFacet is tPrototype {
         selectors[i++] = IGuardSettingFacet.getWhitelistEnabled.selector;
         selectors[i++] = IGuardSettingFacet.isWhitelisted.selector;
 
-        // Setters
+        // NEW — Allowance getter
+        selectors[i++] = IGuardSettingFacet.getAllowance.selector;
+
+        //
+        //  SETTERS
+        //
         selectors[i++] = IGuardSettingFacet.setModuleLockedStatus.selector;
         selectors[i++] = IGuardSettingFacet.setActivatedStatus.selector;
         selectors[i++] = IGuardSettingFacet.setModuleCheckActivated.selector;
@@ -54,11 +53,16 @@ contract tGuardSettingFacet is tPrototype {
         selectors[i++] = IGuardSettingFacet.setModuleDelegateCallAllowed.selector;
         selectors[i++] = IGuardSettingFacet.setWhitelistEnabled.selector;
         selectors[i++] = IGuardSettingFacet.setWhitelist.selector;
+
+        // NEW — whitelist batch
+        selectors[i++] = IGuardSettingFacet.setWhitelistBatch.selector;
+
+        // NEW — allowance setters
+        selectors[i++] = IGuardSettingFacet.setDailyAmountLimit.selector;
+        selectors[i++] = IGuardSettingFacet.setDailyTxLimit.selector;
+        selectors[i++] = IGuardSettingFacet.setDailyAllowance.selector;
     }
 
-    // =========================================================
-    //                       BUILD CUT
-    // =========================================================
     function buildCut() external view override returns (IDiamondCut.FacetCut[] memory) {
         return baseCut(address(facet));
     }

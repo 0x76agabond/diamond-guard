@@ -18,6 +18,7 @@ contract GuardSettingFacet {
     //                      EVENTS
     // =========================================================
 
+    event LockedStatusChanged(bool locked);
     event ModuleLockedStatusChanged(bool locked);
     event ActivatedStatusChanged(bool activated);
     event ModuleCheckActivatedChanged(bool activated);
@@ -26,6 +27,9 @@ contract GuardSettingFacet {
     event ModuleDelegateCallAllowedChanged(bool allowed);
     event WhitelistStatusChanged(bool enabled);
     event WhitelistUpdated(address indexed safe, address indexed target, bool enabled);
+    event DailyAmountLimitChanged(address indexed safe, uint128 limit);
+    event DailyTxLimitChanged(address indexed safe, uint64 limit);
+    event DailyAllowanceUpdated(address indexed safe, uint64 txLimit, uint128 amountLimit);
 
     // =========================================================
     //                      ERRORS
@@ -97,9 +101,26 @@ contract GuardSettingFacet {
         return LibSafeGuard.getStorage().whitelist[safe][target];
     }
 
+    function getAllowance(address safe)
+        external
+        view
+        returns (uint64 date, uint64 txDate, uint64 txCount, uint64 txLimit, uint128 spent, uint128 amountLimit)
+    {
+        LibSafeGuard.Allowance storage a = LibSafeGuard.getStorage().allowances[safe];
+        return (a.date, a.txDate, a.txCount, a.txLimit, a.spent, a.amountLimit);
+    }
+
     // =========================================================
     //                      SETTERS
     // =========================================================
+
+    function setLockedStatus(bool locked) external {
+        LibDiamond.enforceIsContractOwner();
+        LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
+        if (s.isLocked == locked) return;
+        s.isLocked = locked;
+        emit LockedStatusChanged(locked);
+    }
 
     function setModuleLockedStatus(bool locked) external {
         LibDiamond.enforceIsContractOwner();
@@ -192,5 +213,47 @@ contract GuardSettingFacet {
                 emit WhitelistUpdated(safe, targets[i], enabled);
             }
         }
+    }
+
+    function setDailyAmountLimit(address safe, uint128 limit) external {
+        LibDiamond.enforceIsContractOwner();
+        if (safe == address(0)) revert SafeAddressZero();
+
+        LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
+        LibSafeGuard.Allowance storage a = s.allowances[safe];
+
+        if (a.amountLimit == limit) return;
+        a.amountLimit = limit;
+
+        emit DailyAmountLimitChanged(safe, limit);
+    }
+
+    function setDailyTxLimit(address safe, uint64 limit) external {
+        LibDiamond.enforceIsContractOwner();
+        if (safe == address(0)) revert SafeAddressZero();
+
+        LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
+        LibSafeGuard.Allowance storage a = s.allowances[safe];
+
+        if (a.txLimit == limit) return;
+        a.txLimit = limit;
+
+        emit DailyTxLimitChanged(safe, limit);
+    }
+
+    function setDailyAllowance(address safe, uint64 txLimit, uint128 amountLimit) external {
+        LibDiamond.enforceIsContractOwner();
+        if (safe == address(0)) revert SafeAddressZero();
+
+        LibSafeGuard.SafeGuardStorage storage s = LibSafeGuard.getStorage();
+        LibSafeGuard.Allowance storage a = s.allowances[safe];
+
+        // Early exit if nothing changed
+        if (a.txLimit == txLimit && a.amountLimit == amountLimit) return;
+
+        a.txLimit = txLimit;
+        a.amountLimit = amountLimit;
+
+        emit DailyAllowanceUpdated(safe, txLimit, amountLimit);
     }
 }

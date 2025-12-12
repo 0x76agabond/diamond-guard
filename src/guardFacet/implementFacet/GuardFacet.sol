@@ -109,15 +109,6 @@ contract GuardFacet {
             }
         }
 
-        // Gnosis Safe flow is checktransaction -> execTransaction -> checkAfterExecution
-        // we store the tx context here for further use in other guards or after execution
-        // if you want to add more data to the context, you can modify LibContext struct
-        // you should check the file for pattern
-
-        LibContext.setTxType(0); // normal tx
-        LibContext.setNonce(nonce);
-        LibContext.setTxHash(txHash);
-
         emit CheckTransactionSucceeded(safe, nonce, txHash, operation, value, keccak256(data));
     }
 
@@ -163,6 +154,15 @@ contract GuardFacet {
             txHash = safe.getTransactionHash(
                 to, value, data, operation, safeTxGas, baseGas, gasPrice, gasToken, refundReceiver, nonce
             );
+
+            // Gnosis Safe flow is checktransaction -> execTransaction -> checkAfterExecution
+            // we store the tx context here for further use in other guards or after execution
+            // if you want to add more data to the context, you can modify LibContext struct
+            // you should check the file for pattern
+
+            LibContext.setTxType(0); // normal tx
+            LibContext.setNonce(nonce);
+            LibContext.setTxHash(txHash);
         }
 
         checkTransactionInner(msg.sender, to, value, data, operation, executor, nonce, txHash, signatures);
