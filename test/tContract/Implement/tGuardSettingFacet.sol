@@ -29,7 +29,7 @@ contract tGuardSettingFacet is tPrototype {
         //
         //  GETTERS
         //
-        selectors[i++] = IGuardSettingFacet.getModuleLockedStatus.selector;
+        selectors[i++] = IGuardSettingFacet.setLockedStatus.selector;
         selectors[i++] = IGuardSettingFacet.getModuleLockedStatus.selector;
         selectors[i++] = IGuardSettingFacet.getActivatedStatus.selector;
         selectors[i++] = IGuardSettingFacet.getModuleCheckActivated.selector;
