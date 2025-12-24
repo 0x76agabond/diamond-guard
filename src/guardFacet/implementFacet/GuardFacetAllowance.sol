@@ -47,64 +47,8 @@ contract GuardFacetAllowance {
     event CheckModuleAfterExecutionSucceeded(address indexed safe, bytes32 indexed txHash, bool success);
 
     // =========================================================
-    //                      CONSTANTS
+    //                      CORE LOGIC
     // =========================================================
-
-    // ERC20 selectors
-    bytes4 internal constant SELECTOR_TRANSFER = 0xa9059cbb; // transfer(address,uint256)
-    bytes4 internal constant SELECTOR_TRANSFER_FROM = 0x23b872dd; // transferFrom(address,address,uint256)
-
-    // =========================================================
-    //                      INTERNAL HELPERS
-    // =========================================================
-
-    function dayStamp() internal view returns (uint64) {
-        return uint64(block.timestamp / 1 days);
-    }
-
-    function resolveAllowanceTargetAndAmount(
-        address to,
-        uint256 value,
-        bytes memory data,
-        LibSafeHandler.SafeOperation operation
-    ) internal pure returns (address target, uint256 amount) {
-        target = to;
-        amount = value;
-
-        if (operation != LibSafeHandler.SafeOperation.Call || data.length < 4) {
-            return (target, amount);
-        }
-
-        bytes4 selector = bytes4(data);
-
-        // ERC20 transfer(address,uint256)
-        if (selector == SELECTOR_TRANSFER) {
-            address ercTo;
-            uint256 ercValue;
-
-            assembly {
-                ercTo := mload(add(data, 36)) // arg1
-                ercValue := mload(add(data, 68)) // arg2
-            }
-
-            return (ercTo, ercValue);
-        }
-
-        // ERC20 transferFrom(address,address,uint256)
-        if (selector == SELECTOR_TRANSFER_FROM) {
-            address ercTo;
-            uint256 ercValue;
-
-            assembly {
-                ercTo := mload(add(data, 68)) // to
-                ercValue := mload(add(data, 100)) // amount
-            }
-
-            return (ercTo, ercValue);
-        }
-
-        return (target, amount);
-    }
 
     function applyAllowanceAndWhitelist(
         LibSafeGuard.SafeGuardStorage storage s,
@@ -115,7 +59,7 @@ contract GuardFacetAllowance {
         bytes32 txHash
     ) internal {
         LibSafeGuard.Allowance storage a = s.allowances[safe];
-        uint64 today = dayStamp();
+        uint64 today = LibSafeGuard.dayStamp();
 
         // reset amount bucket if new day
         if (a.date != today) {
@@ -148,10 +92,6 @@ contract GuardFacetAllowance {
         a.txCount += 1;
     }
 
-    // =========================================================
-    //                      CORE LOGIC
-    // =========================================================
-
     function checkTransactionInner(
         address safe,
         address to,
@@ -169,7 +109,8 @@ contract GuardFacetAllowance {
         }
 
         // Resolve real target + amount for allowance and whitelist
-        (address allowanceTarget, uint256 allowanceAmount) = resolveAllowanceTargetAndAmount(to, value, data, operation);
+        (address allowanceTarget, uint256 allowanceAmount) =
+            LibSafeGuard.resolveAllowanceTargetAndAmount(to, value, data, operation);
 
         // Apply daily allowance (amount + tx count) and whitelist bypass
         applyAllowanceAndWhitelist(s, safe, allowanceTarget, allowanceAmount, nonce, txHash);
@@ -245,7 +186,8 @@ contract GuardFacetAllowance {
         }
 
         // Reuse same ERC resolution logic for modules
-        (address allowanceTarget, uint256 allowanceAmount) = resolveAllowanceTargetAndAmount(to, value, data, operation);
+        (address allowanceTarget, uint256 allowanceAmount) =
+            LibSafeGuard.resolveAllowanceTargetAndAmount(to, value, data, operation);
 
         applyAllowanceAndWhitelist(s, msg.sender, allowanceTarget, allowanceAmount, 0, moduleTxHash);
 

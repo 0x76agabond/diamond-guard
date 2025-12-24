@@ -10,6 +10,8 @@ pragma solidity >=0.8.30;
  * ===========================================================================
  */
 
+import {LibSafeHandler} from "./LibSafeHandler.sol";
+
 library LibSafeGuard {
     // ERC-8042
     // I'm an independent researcher so leave {org} as "eth"
@@ -49,5 +51,65 @@ library LibSafeGuard {
         assembly {
             s.slot := pos
         }
+    }
+
+    // =========================================================
+    //                      CONSTANTS
+    // =========================================================
+
+    // ERC20 selectors
+    bytes4 internal constant SELECTOR_TRANSFER = 0xa9059cbb; // transfer(address,uint256)
+    bytes4 internal constant SELECTOR_TRANSFER_FROM = 0x23b872dd; // transferFrom(address,address,uint256)
+
+    // =========================================================
+    //                      INTERNAL HELPERS
+    // =========================================================
+
+    function dayStamp() internal view returns (uint64) {
+        return uint64(block.timestamp / 1 days);
+    }
+
+    function resolveAllowanceTargetAndAmount(
+        address to,
+        uint256 value,
+        bytes memory data,
+        LibSafeHandler.SafeOperation operation
+    ) internal pure returns (address target, uint256 amount) {
+        target = to;
+        amount = value;
+
+        if (operation != LibSafeHandler.SafeOperation.Call || data.length < 4) {
+            return (target, amount);
+        }
+
+        bytes4 selector = bytes4(data);
+
+        // ERC20 transfer(address,uint256)
+        if (selector == SELECTOR_TRANSFER) {
+            address ercTo;
+            uint256 ercValue;
+
+            assembly {
+                ercTo := mload(add(data, 36)) // arg1
+                ercValue := mload(add(data, 68)) // arg2
+            }
+
+            return (ercTo, ercValue);
+        }
+
+        // ERC20 transferFrom(address,address,uint256)
+        if (selector == SELECTOR_TRANSFER_FROM) {
+            address ercTo;
+            uint256 ercValue;
+
+            assembly {
+                ercTo := mload(add(data, 68)) // to
+                ercValue := mload(add(data, 100)) // amount
+            }
+
+            return (ercTo, ercValue);
+        }
+
+        return (target, amount);
     }
 }
