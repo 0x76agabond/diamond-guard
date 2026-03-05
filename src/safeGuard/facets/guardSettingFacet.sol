@@ -138,17 +138,6 @@ contract GuardSettingFacet {
         emit ModuleCheckActivatedChanged(activated);
     }
 
-    function setWhitelistEnabledStatus(bool enabled) external {
-        OwnerMod.requireOwner();
-        SafeGuardMod.GuardStateStorage storage state = SafeGuardMod.getStateStorage();
-
-        if (!state.isInitialized) revert GuardNotInitialized();
-        if (state.isWhitelistEnabled == enabled) return;
-
-        state.isWhitelistEnabled = enabled;
-        emit WhitelistStatusChanged(enabled);
-    }
-
     function setEnforceExecutorStatus(bool enforced) external {
         OwnerMod.requireOwner();
         SafeGuardMod.GuardStateStorage storage state = SafeGuardMod.getStateStorage();
@@ -182,21 +171,52 @@ contract GuardSettingFacet {
         emit ModuleDelegateCallAllowedChanged(allowed);
     }
 
-    //function setWhitelist(address safe, address target, bool enabled) external {
-    //    OwnerMod.requireOwner();
-    //
-    //    if (safe == address(0)) {
-    //        revert SafeAddressZero();
-    //    }
-    //
-    //    if (target == address(0)) {
-    //        revert WhitelistAddressZero();
-    //    }
-    //
-    //    SafeGuardMod.GuardStorage storage s = SafeGuardMod.getGuardStorage();
-    //    if (s.whitelist[safe][target] == enabled) return;
-    //    s.whitelist[safe][target] = enabled;
-    //    emit WhitelistUpdated(safe, target, enabled);
-    //}
+    function setWhitelistEnabledStatus(bool enabled) external {
+        OwnerMod.requireOwner();
+        SafeGuardMod.GuardStateStorage storage state = SafeGuardMod.getStateStorage();
+
+        if (!state.isInitialized) revert GuardNotInitialized();
+        if (state.isWhitelistEnabled == enabled) return;
+
+        state.isWhitelistEnabled = enabled;
+        emit WhitelistStatusChanged(enabled);
+    }
+
+    function setWhitelist(address safe, address target, bool enabled) external {
+        OwnerMod.requireOwner();
+
+        if (safe == address(0)) {
+            revert SafeAddressZero();
+        }
+
+        if (target == address(0)) {
+            revert WhitelistAddressZero();
+        }
+
+        SafeGuardMod.GuardStorage storage s = SafeGuardMod.getGuardStorage();
+        if (s.whitelist[safe][target] == enabled) return;
+        s.whitelist[safe][target] = enabled;
+        emit WhitelistUpdated(safe, target, enabled);
+    }
+
+    function setWhitelistBatch(address safe, address[] calldata targets, bool enabled) external {
+        OwnerMod.requireOwner();
+
+        if (safe == address(0)) {
+            revert SafeAddressZero();
+        }
+
+        SafeGuardMod.GuardStorage storage s = SafeGuardMod.getGuardStorage();
+        for (uint256 i; i < targets.length; i++) {
+            if (targets[i] == address(0)) {
+                revert WhitelistAddressZero();
+            }
+
+            if (s.whitelist[safe][targets[i]] != enabled) {
+                s.whitelist[safe][targets[i]] = enabled;
+                emit WhitelistUpdated(safe, targets[i], enabled);
+            }
+        }
+    }
 }
 

@@ -76,7 +76,7 @@ function getStateStorage() pure returns (GuardStateStorage storage s) {
     }
 }
 
-function getAllStorage() pure returns (GuardStorage storage guardStorage, GuardStateStorage storage stateStorage) {
+function getFullStorage() pure returns (GuardStorage storage guardStorage, GuardStateStorage storage stateStorage) {
     bytes32 posGuard = GUARD_STORAGE_MAIN_POSITION;
     bytes32 posState = GUARD_STORAGE_STATE_POSITION;
     assembly {
