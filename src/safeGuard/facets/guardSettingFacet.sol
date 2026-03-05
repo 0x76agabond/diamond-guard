@@ -207,15 +207,19 @@ contract GuardSettingFacet {
         }
 
         SafeGuardMod.GuardStorage storage s = SafeGuardMod.getGuardStorage();
-        for (uint256 i; i < targets.length; i++) {
-            if (targets[i] == address(0)) {
+        uint256 len = targets.length;
+        for (uint256 i; i < len; i++) {
+            address target = targets[i];
+
+            if (target == address(0)) {
                 revert WhitelistAddressZero();
             }
 
-            if (s.whitelist[safe][targets[i]] != enabled) {
-                s.whitelist[safe][targets[i]] = enabled;
-                emit WhitelistUpdated(safe, targets[i], enabled);
+            if (s.whitelist[safe][target] != enabled) {
+                s.whitelist[safe][target] = enabled;
             }
+
+            emit WhitelistUpdated(safe, target, enabled);
         }
     }
 }

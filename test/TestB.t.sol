@@ -16,7 +16,7 @@ import {TestManager} from "./TestManager/TestManager.sol";
 
 import "../../src/walletAllowance/facets/walletAllowanceFacet.sol";
 
-contract testA is TestManager {
+contract TestB is TestManager {
     address safe = address(0x123);
 
     function setUp() public {
@@ -42,13 +42,8 @@ contract testA is TestManager {
         // Early exit if nothing changed
         if (a.txLimit == txLimit && a.amountLimit == amountLimit) return;
 
-        if (a.txLimit != txLimit) {
-            a.txLimit = txLimit;
-        }
-
-        if (a.amountLimit != amountLimit) {
-            a.amountLimit = amountLimit;
-        }
+        a.txLimit = txLimit;
+        a.amountLimit = amountLimit;
 
         emit DailyAllowanceUpdated(safe, txLimit, amountLimit);
     }

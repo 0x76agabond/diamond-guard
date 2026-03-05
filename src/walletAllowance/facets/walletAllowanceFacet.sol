@@ -39,24 +39,45 @@ contract WalletAllowanceFacet {
         emit DailyTxLimitChanged(safe, txLimit);
     }
 
-    function setDailyAllowance(address safe, uint64 txLimit, uint128 amountLimit) external {
+    function setDailyAllowance(AllowanceSetting memory setting) external {
         OwnerMod.requireOwner();
-        if (safe == address(0)) revert SafeAddressZero();
+        if (setting.safe == address(0)) revert SafeAddressZero();
 
         WalletAllowanceMod.AllowanceStorage storage s = WalletAllowanceMod.getAllowanceStorage();
-        WalletAllowanceMod.Allowance storage a = s.allowances[safe];
+        WalletAllowanceMod.Allowance storage a = s.allowances[setting.safe];
 
         // Early exit if nothing changed
-        if (a.txLimit == txLimit && a.amountLimit == amountLimit) return;
-
-        if (a.txLimit != txLimit) {
-            a.txLimit = txLimit;
+        if (a.txLimit == setting.txLimit && a.amountLimit == setting.amountLimit) {
+            return;
         }
 
-        if (a.amountLimit != amountLimit) {
-            a.amountLimit = amountLimit;
-        }
+        a.txLimit = setting.txLimit;
+        a.amountLimit = setting.amountLimit;
 
-        emit DailyAllowanceUpdated(safe, txLimit, amountLimit);
+        emit DailyAllowanceUpdated(setting.safe, setting.txLimit, setting.amountLimit);
+    }
+
+    function setDailyAllowanceBatch(AllowanceSetting[] memory settings) external {
+        OwnerMod.requireOwner();
+        WalletAllowanceMod.AllowanceStorage storage s = WalletAllowanceMod.getAllowanceStorage();
+
+        uint256 len = settings.length;
+        for (uint256 i; i < len; i++) {
+            AllowanceSetting memory setting = settings[i];
+
+            if (setting.safe == address(0)) revert SafeAddressZero();
+
+            WalletAllowanceMod.Allowance storage a = s.allowances[setting.safe];
+
+            // Early exit if nothing changed
+            if (a.txLimit == setting.txLimit && a.amountLimit == setting.amountLimit) {
+                continue;
+            }
+
+            a.txLimit = setting.txLimit;
+            a.amountLimit = setting.amountLimit;
+
+            emit DailyAllowanceUpdated(setting.safe, setting.txLimit, setting.amountLimit);
+        }
     }
 }

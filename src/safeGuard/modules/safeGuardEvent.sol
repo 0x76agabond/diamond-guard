@@ -21,6 +21,7 @@ event DelegateCallAllowedChanged(bool allowed);
 event ModuleDelegateCallAllowedChanged(bool allowed);
 event WhitelistStatusChanged(bool enabled);
 event WhitelistUpdated(address indexed safe, address indexed target, bool enabled);
+event WhitelistUpdatedBatch(address indexed safe, address[] indexed targets, bool enabled);
 
 // =========================================================
 //                      ERRORS
