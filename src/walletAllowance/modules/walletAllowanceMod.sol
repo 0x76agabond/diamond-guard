@@ -20,11 +20,17 @@ struct Allowance {
     uint128 amountLimit;
 }
 
+struct AllowanceSetting {
+    address safe;
+    uint64 txLimit;
+    uint128 amountLimit;
+}
+
 /**
  * @dev Minimal Form:
- * diamondGuard.business.walletAllowance
+ * diamondGuard.business.walletallowance
  * ---------------------------------
- * @custom:storage-location erc8042:org.diamondGuard.business.walletAllowance.v1
+ * @custom:storage-location erc8042:org.diamondguard.business.walletallowance.v1
  */
 
 bytes32 constant ALLOWANCE_STORAGE_POSITION = keccak256("org.diamondguard.business.walletallowance.v1");

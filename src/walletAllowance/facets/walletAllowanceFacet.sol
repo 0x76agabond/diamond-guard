@@ -10,10 +10,17 @@ pragma solidity >=0.8.30;
  */
 
 import "../modules/walletEvent.sol";
+
 import "../../access/Owner/OwnerMod.sol" as OwnerMod;
 import "../modules/walletAllowanceMod.sol" as WalletAllowanceMod;
 
-contract WalletAllowanceFacet {
+contract WalletAllowanceFacet {    
+
+    function getWalletAllowance(address safe) external view returns (WalletAllowanceMod.Allowance memory) {
+        WalletAllowanceMod.AllowanceStorage storage s = WalletAllowanceMod.getAllowanceStorage();
+        return s.allowances[safe];
+    }
+
     function setDailyAmountLimit(address safe, uint128 amountLimit) external {
         OwnerMod.requireOwner();
         if (safe == address(0)) revert SafeAddressZero();
@@ -39,7 +46,7 @@ contract WalletAllowanceFacet {
         emit DailyTxLimitChanged(safe, txLimit);
     }
 
-    function setDailyAllowance(AllowanceSetting memory setting) external {
+    function setDailyAllowance(WalletAllowanceMod.AllowanceSetting memory setting) external {
         OwnerMod.requireOwner();
         if (setting.safe == address(0)) revert SafeAddressZero();
 
@@ -57,13 +64,13 @@ contract WalletAllowanceFacet {
         emit DailyAllowanceUpdated(setting.safe, setting.txLimit, setting.amountLimit);
     }
 
-    function setDailyAllowanceBatch(AllowanceSetting[] memory settings) external {
+    function setDailyAllowanceBatch(WalletAllowanceMod.AllowanceSetting[] memory settings) external {
         OwnerMod.requireOwner();
         WalletAllowanceMod.AllowanceStorage storage s = WalletAllowanceMod.getAllowanceStorage();
 
         uint256 len = settings.length;
         for (uint256 i; i < len; i++) {
-            AllowanceSetting memory setting = settings[i];
+            WalletAllowanceMod.AllowanceSetting memory setting = settings[i];
 
             if (setting.safe == address(0)) revert SafeAddressZero();
 
@@ -79,5 +86,6 @@ contract WalletAllowanceFacet {
 
             emit DailyAllowanceUpdated(setting.safe, setting.txLimit, setting.amountLimit);
         }
+        
     }
 }

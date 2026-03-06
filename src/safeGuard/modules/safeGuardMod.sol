@@ -30,9 +30,9 @@ import "./safeGuardEvent.sol";
 
 /**
  * @dev Minimal Form:
- * diamondGuard.business.guard
+ * diamondguard.business.guard
  * ---------------------------------
- * @custom:storage-location erc8042:org.diamondGuard.business.guard.v1
+ * @custom:storage-location erc8042:org.diamondguard.business.guard.v1
  */
 
 bytes32 constant GUARD_STORAGE_MAIN_POSITION = keccak256("org.diamondguard.business.guard.v1");
@@ -50,9 +50,9 @@ function getGuardStorage() pure returns (GuardStorage storage s) {
 
 /**
  * @dev Minimal Form:
- * diamondGuard.business.guard.state
+ * diamondguard.business.guard.state
  * ---------------------------------
- * @custom:storage-location erc8042:org.diamondGuard.business.guard.v1.state
+ * @custom:storage-location erc8042:org.diamondguard.business.guard.v1.state
  */
 
 bytes32 constant GUARD_STORAGE_STATE_POSITION = keccak256("org.diamondguard.business.guard.v1.state");
