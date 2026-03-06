@@ -218,7 +218,7 @@ contract GuardSettingFacet {
             if (s.whitelist[safe][target] != enabled) {
                 s.whitelist[safe][target] = enabled;
                 emit WhitelistUpdated(safe, target, enabled);
-            }            
+            }
         }
     }
 }

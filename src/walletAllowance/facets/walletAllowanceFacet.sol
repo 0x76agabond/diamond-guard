@@ -14,8 +14,7 @@ import "../modules/walletEvent.sol";
 import "../../access/Owner/OwnerMod.sol" as OwnerMod;
 import "../modules/walletAllowanceMod.sol" as WalletAllowanceMod;
 
-contract WalletAllowanceFacet {    
-
+contract WalletAllowanceFacet {
     function getWalletAllowance(address safe) external view returns (WalletAllowanceMod.Allowance memory) {
         WalletAllowanceMod.AllowanceStorage storage s = WalletAllowanceMod.getAllowanceStorage();
         return s.allowances[safe];
@@ -86,6 +85,5 @@ contract WalletAllowanceFacet {
 
             emit DailyAllowanceUpdated(setting.safe, setting.txLimit, setting.amountLimit);
         }
-        
     }
 }
