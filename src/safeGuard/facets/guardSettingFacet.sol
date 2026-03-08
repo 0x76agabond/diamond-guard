@@ -11,7 +11,7 @@ pragma solidity >=0.8.30;
 
 import "../modules/safeGuardMod.sol" as SafeGuardMod;
 import "../../access/Owner/OwnerMod.sol" as OwnerMod;
-import "../modules/safeGuardEvent.sol";
+import "../modules/guardSettingEvent.sol";
 
 /**
  * @dev

@@ -26,7 +26,6 @@ pragma solidity >=0.8.30;
  */
 
 import "../../access/Owner/OwnerMod.sol" as OwnerMod;
-import "./safeGuardEvent.sol";
 
 /**
  * @dev Minimal Form:
@@ -35,7 +34,7 @@ import "./safeGuardEvent.sol";
  * @custom:storage-location erc8042:org.diamondguard.business.guard.v1
  */
 
-bytes32 constant GUARD_STORAGE_MAIN_POSITION = keccak256("org.diamondguard.business.guard.v1");
+bytes32 constant GUARD_STORAGE_MAIN_POSITION = keccak256("org.diamondguard.business.safeguard.v1");
 
 struct GuardStorage {
     mapping(address => mapping(address => bool)) whitelist;
@@ -55,7 +54,7 @@ function getGuardStorage() pure returns (GuardStorage storage s) {
  * @custom:storage-location erc8042:org.diamondguard.business.guard.v1.state
  */
 
-bytes32 constant GUARD_STORAGE_STATE_POSITION = keccak256("org.diamondguard.business.guard.v1.state");
+bytes32 constant GUARD_STORAGE_STATE_POSITION = keccak256("org.diamondguard.business.safeguard.v1.state");
 
 struct GuardStateStorage {
     bool isInitialized;
@@ -76,7 +75,10 @@ function getStateStorage() pure returns (GuardStateStorage storage s) {
     }
 }
 
-function getFullStorage() pure returns (GuardStorage storage guardStorage, GuardStateStorage storage stateStorage) {
+function getFullGuardStorage()
+    pure
+    returns (GuardStorage storage guardStorage, GuardStateStorage storage stateStorage)
+{
     bytes32 posGuard = GUARD_STORAGE_MAIN_POSITION;
     bytes32 posState = GUARD_STORAGE_STATE_POSITION;
     assembly {

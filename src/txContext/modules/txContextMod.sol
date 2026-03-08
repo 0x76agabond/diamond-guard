@@ -63,10 +63,10 @@ pragma solidity >=0.8.30;
  * Example (minimal):
  * project.context.v1.nonce
  *
- * @custom:storage-location erc8042:org.diamondguard.business.context.v1.nonce
+ * @custom:storage-location erc8042:org.diamondguard.system.context.v1.nonce
  */
 
-bytes32 constant SLOT_NONCE = keccak256("org.diamondguard.business.context.v1.nonce");
+bytes32 constant SLOT_NONCE = keccak256("org.diamondguard.system.context.v1.nonce");
 
 function getNonce() view returns (uint256 v) {
     bytes32 position = SLOT_NONCE;
@@ -87,10 +87,10 @@ function setNonce(uint256 nonce) {
  * Example (minimal):
  * project.context.v1.txhash
  * ---------------------------------
- * @custom:storage-location erc8042:org.diamondguard.business.context.v1.txhash
+ * @custom:storage-location erc8042:org.diamondguard.system.context.v1.txhash
  */
 
-bytes32 constant SLOT_TX_HASH = keccak256("org.diamondguard.business.context.v1.txhash");
+bytes32 constant SLOT_TX_HASH = keccak256("org.diamondguard.system.context.v1.txhash");
 
 function getTxHash() view returns (bytes32 v) {
     bytes32 position = SLOT_TX_HASH;
@@ -128,10 +128,10 @@ enum transactionType {
  * @dev Example (minimal):
  * project.context.v1.txtype
  * ---------------------------------
- * @custom:storage-location erc8042:org.diamondguard.business.context.v1.txtype
+ * @custom:storage-location erc8042:org.diamondguard.system.context.v1.txtype
  */
 
-bytes32 constant SLOT_TX_TYPE = keccak256("org.diamondguard.business.context.v1.txtype");
+bytes32 constant SLOT_TX_TYPE = keccak256("org.diamondguard.system.context.v1.txtype");
 
 function getTxType() view returns (transactionType txType) {
     bytes32 position = SLOT_TX_TYPE;

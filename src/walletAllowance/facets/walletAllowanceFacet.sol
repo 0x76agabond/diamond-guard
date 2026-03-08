@@ -14,11 +14,29 @@ import "../modules/walletEvent.sol";
 import "../../access/Owner/OwnerMod.sol" as OwnerMod;
 import "../modules/walletAllowanceMod.sol" as WalletAllowanceMod;
 
+/**
+ * @dev
+ * Facet used to manage Allowance Settings.
+ * Provides getters and setters for allowance management.
+ * Only the contract owner is allowed to modify these settings.
+ *
+ * This facet is mainly intended for off-chain communication
+ * and configuration management.
+ */
+
 contract WalletAllowanceFacet {
+    // =========================================================
+    //                      GETTERS
+    // =========================================================
+
     function getWalletAllowance(address safe) external view returns (WalletAllowanceMod.Allowance memory) {
         WalletAllowanceMod.AllowanceStorage storage s = WalletAllowanceMod.getAllowanceStorage();
         return s.allowances[safe];
     }
+
+    // =========================================================
+    //                      SETTERs
+    // =========================================================
 
     function setDailyAmountLimit(address safe, uint128 amountLimit) external {
         OwnerMod.requireOwner();
