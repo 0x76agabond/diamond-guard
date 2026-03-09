@@ -59,8 +59,6 @@ contract GuardHandlerFacet {
                 revert ExecutorSignatureMissing(safe, nonce, txHash, executor);
             }
         }
-
-        emit CheckTransactionSucceeded(safe, nonce, txHash, operation, value, keccak256(data));
     }
 
     // Safe call this function before execute transaction
@@ -117,6 +115,8 @@ contract GuardHandlerFacet {
         }
 
         checkTransactionInner(msg.sender, to, value, data, operation, executor, nonce, txHash, signatures);
+
+        emit CheckTransactionSucceeded(msg.sender, nonce, txHash, operation, value, keccak256(data));
     }
 
     // Safe call this function after execute transaction

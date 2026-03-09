@@ -18,6 +18,15 @@ import "../../interfaces/ISafe.sol" as SafeInterface;
 import "../../safe/safeHandlerMod.sol" as SafeHandlerMod;
 import "../../txContext/modules/txContextMod.sol" as txContextMod;
 
+/**
+ * @dev
+ *
+ * This guard facet implements daily allowance feature, which can be used to limit the daily spending of a safe. It can be used as a standalone guard or can be combined with other guard facets (e.g. whitelist) for more complex use cases.
+ * This is independent from guardHandlerFacet.
+ * I'm implemented this facet as a PoC also, so please check it carefully before using it in production.
+ *
+ *
+ */
 contract GuardHandlerAllowanceFacet {
     function checkTransactionInner(
         address safe,
@@ -39,9 +48,14 @@ contract GuardHandlerAllowanceFacet {
             revert SafeExecutionBlocked(safe, nonce, txHash);
         }
 
+        // since the guard is no activated, return early
         if (!ss.isActivated) {
-            // since the guard is no activated, return early
             return;
+        }
+
+        // whitelist is required for allowance guard to work, so we check it first before resolving allowance target and amount
+        if (!ss.isWhitelistEnabled) {
+            revert WhitelistMuchBeEnabled();
         }
 
         // Resolve real target + amount for allowance and whitelist
@@ -102,6 +116,23 @@ contract GuardHandlerAllowanceFacet {
         bytes32 txHash;
         uint256 nonce;
         {
+            // =========================================================================
+            // Gnosis Safe transaction hash calculation flow
+            // nonce += 1 before call check transaction, so we need to decrease nonce by 1 to get the correct txHash
+            // =========================================================================
+            // step 1: encode transaction data
+            // txHashData = encodeTransactionData( ... );
+            // step 2: increase nonce
+            // nonce++;
+            // step 3: verify signatures
+            // checkSignatures(txHash, sigs);
+            // step 4: pre-execution check
+            // guard.checkTransaction(...);
+            // step 5: execute core tx
+            // success = execute(...);
+            // step 6: post-execution check
+            // guard.checkAfterExecution(...);
+
             SafeInterface.ISafe safe = SafeInterface.ISafe(payable(msg.sender));
             unchecked {
                 // Safe increments nonce before calling guard, so we subtract 1
@@ -112,37 +143,29 @@ contract GuardHandlerAllowanceFacet {
                 to, value, data, operation, safeTxGas, baseGas, gasPrice, gasToken, refundReceiver, nonce
             );
 
+            // Gnosis Safe flow is checktransaction -> execTransaction -> checkAfterExecution
+            // we store the tx context here for further use in other guards or after execution
+            // if you want to add more data to the context, you can modify LibContext struct
+            // you should check the file for pattern
+
             txContextMod.setTxType(txContextMod.transactionType.NORMAL); // normal tx
             txContextMod.setNonce(nonce);
             txContextMod.setTxHash(txHash);
         }
 
         checkTransactionInner(msg.sender, to, value, data, operation, nonce, txHash);
+
+        emit CheckTransactionSucceeded(msg.sender, nonce, txHash, operation, value, keccak256(data));
     }
 
     // Safe calls this function after executing a transaction
     function checkAfterExecution(bytes32 txHash, bool success) external {
         // Allowance guard variant only emits event for indexing / monitoring.
+
+        // this is how you retrieve context data
+        // bytes32 contextTxHash = txContextMod.getTxHash();
+        // uint256 contextInt = txContextMod.getNonce();
+
         emit CheckAfterExecutionSucceeded(msg.sender, txHash, success);
-    }
-
-    // =========================================================
-    //       Safe Module: checkModuleTransaction / AfterExecution
-    // =========================================================
-
-    // Safe calls this function before executing a transaction via module
-    function checkModuleTransaction(
-        address to,
-        uint256 value,
-        bytes memory data,
-        SafeOperation operation,
-        address module
-    ) external returns (bytes32 moduleTxHash) {
-        emit CheckModuleTransactionSucceeded(msg.sender, moduleTxHash, operation, value, keccak256(data));
-    }
-
-    // Safe calls this function after executing a transaction via module
-    function checkAfterModuleExecution(bytes32 txHash, bool success) external {
-        emit CheckModuleAfterExecutionSucceeded(msg.sender, txHash, success);
     }
 }

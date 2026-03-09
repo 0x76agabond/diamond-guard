@@ -22,6 +22,7 @@ event DailyAllowanceUpdated(address indexed safe, uint64 txLimit, uint128 amount
 // =========================================================
 
 error SafeAddressZero();
+error WhitelistMuchBeEnabled();
 error WhitelistAddressZero();
 error GuardInitialized(address guardAddress);
 error ERC20TransferDataInvalid();
