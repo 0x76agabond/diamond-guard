@@ -14,37 +14,52 @@ import "forge-std/console2.sol";
 import "forge-std/Test.sol";
 import {TestManager} from "./TestManager/TestManager.sol";
 
-import "../../src/walletAllowance/facets/walletAllowanceFacet.sol";
+import "../src/interfaces/ISafe.sol" as SafeInterface;
+
+import "../src/walletAllowance/modules/walletEvent.sol";
+import "../src/walletAllowance/modules/walletAllowanceMod.sol" as WalletAllowanceMod;
+
+import "../src/safeGuard/modules/safeGuardEvent.sol";
+import "../src/safeGuard/modules/safeGuardMod.sol" as SafeGuardMod;
+
+import "../src/txContext/modules/txContextMod.sol" as txContextMod;
+import {SafeOperation} from "../src/safe/safeHandlerMod.sol";
 
 contract TestB is TestManager {
-    address safe = address(0x123);
+    address safe_address = address(0x123);
 
-    function setUp() public {
-        WalletAllowanceMod.AllowanceStorage storage s = WalletAllowanceMod.getAllowanceStorage();
-        WalletAllowanceMod.Allowance storage a = s.allowances[safe];
+    function setUp() public {}
 
-        uint64 txLimit = 1;
-        uint128 amountLimit = 1000;
-
-        a.txLimit = txLimit;
-        a.amountLimit = amountLimit;
+    function test_check_transaction(
+        address to,
+        uint256 value,
+        bytes memory data,
+        SafeOperation operation,
+        uint256 safeTxGas,
+        uint256 baseGas,
+        uint256 gasPrice,
+        address gasToken,
+        address payable refundReceiver,
+        bytes memory,
+        /*signatures*/
+        address /*executor*/
+    ) public {
+        bytes32 txHash;
+        uint256 nonce;
+        
     }
 
-    function test_assembly() public {
-        uint64 txLimit = 1;
-        uint128 amountLimit = 2000;
+    function checkTransactionInner(
+        address to,
+        uint256 value,
+        bytes memory data,
+        SafeOperation operation,
+        uint256 nonce,
+        bytes32 txHash
+    ) internal {
+       
 
-        if (safe == address(0)) revert SafeAddressZero();
-
-        WalletAllowanceMod.AllowanceStorage storage s = WalletAllowanceMod.getAllowanceStorage();
-        WalletAllowanceMod.Allowance storage a = s.allowances[safe];
-
-        // Early exit if nothing changed
-        if (a.txLimit == txLimit && a.amountLimit == amountLimit) return;
-
-        a.txLimit = txLimit;
-        a.amountLimit = amountLimit;
-
-        emit DailyAllowanceUpdated(safe, txLimit, amountLimit);
+        
     }
 }
+

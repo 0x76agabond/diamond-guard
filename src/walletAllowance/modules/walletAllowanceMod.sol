@@ -56,18 +56,12 @@ function getAllowanceStorage() pure returns (AllowanceStorage storage s) {
 
 function getGuardAndAllowanceStorage()
     pure
-    returns (
-        SafeGuardMod.GuardStorage storage guardStorage,
-        SafeGuardMod.GuardStateStorage storage stateStorage,
-        AllowanceStorage storage allowanceStorage
-    )
+    returns (SafeGuardMod.GuardStorage storage guardStorage, AllowanceStorage storage allowanceStorage)
 {
     bytes32 guardPos = SafeGuardMod.GUARD_STORAGE_MAIN_POSITION;
-    bytes32 statePos = SafeGuardMod.GUARD_STORAGE_STATE_POSITION;
     bytes32 allowancePos = ALLOWANCE_STORAGE_POSITION;
     assembly {
         guardStorage.slot := guardPos
-        stateStorage.slot := statePos
         allowanceStorage.slot := allowancePos
     }
 }
@@ -76,46 +70,78 @@ function getGuardAndAllowanceStorage()
 //                      ALLOWANCE Helper
 // =========================================================
 
-function dayStamp() view returns (uint64) {
-    return uint64(block.timestamp / 1 days);
-}
-
-function resolveAllowanceTargetAndAmount(address to, uint256 value, bytes memory data, SafeOperation operation)
+function resolveAllowanceTargetAndAmount(address to, uint256 value, bytes memory data)
     pure
     returns (address target, uint256 amount)
 {
-    if (operation == SafeOperation.Call && data.length > 4) {
+    if (data.length > 4) {
         bytes4 selector = bytes4(data);
         if (selector == SELECTOR_TRANSFER) {
-            address ercTo;
-            uint256 ercValue;
-
             if (data.length < 68) {
                 revert ERC20TransferDataInvalid();
             }
 
             assembly {
-                ercTo := mload(add(data, 36)) // arg1
-                ercValue := mload(add(data, 68)) // arg2
+                target := mload(add(data, 36)) // arg1
+                amount := mload(add(data, 68)) // arg2
             }
-            return (ercTo, ercValue);
+            return (target, amount);
         }
 
         if (selector == SELECTOR_TRANSFER_FROM) {
-            address ercTo;
-            uint256 ercValue;
-
             if (data.length < 100) {
                 revert ERC20TransferFromDataInvalid();
             }
 
             assembly {
-                ercTo := mload(add(data, 68)) // to
-                ercValue := mload(add(data, 100)) // amount
+                target := mload(add(data, 68)) // to
+                amount := mload(add(data, 100)) // amount
             }
-            return (ercTo, ercValue);
+            return (target, amount);
         }
     }
 
     return (to, value);
+}
+
+function checkWhitelist(uint256 nonce1, address to, uint256 value, bytes memory data, bytes32 txHash) {
+    // Resolve real target + amount for allowance and whitelist
+    (address target, uint256 amount) = resolveAllowanceTargetAndAmount(to, value, data);
+
+    if (amount > type(uint128).max) {
+        revert AmountTooLarge();
+    }
+
+    uint64 today = uint64(block.timestamp / 1 days);
+
+    (SafeGuardMod.GuardStorage storage gs, AllowanceStorage storage ast) = getGuardAndAllowanceStorage();
+    Allowance storage a = ast.allowances[msg.sender];
+
+    // reset amount bucket if new day
+    if (a.date != today) {
+        a.date = today;
+        a.spent = 0;
+        a.txCount = 0;
+    }
+
+    bool exceedAmount = (a.amountLimit > 0 && (amount > a.amountLimit || a.spent > a.amountLimit - amount));
+    bool exceedTx = (a.txLimit > 0 && a.txCount + 1 > a.txLimit);
+
+    if (exceedAmount || exceedTx) {
+        // require whitelist as bypass when limit reached
+        if (!gs.whitelist[msg.sender][target]) {
+            revert WhitelistRequired(msg.sender, nonce1, txHash, target);
+        }
+
+        // whitelist is one-time use when bypass is triggered
+        gs.whitelist[msg.sender][target] = false;
+
+        // (we don't emit WhitelistUpdated here to avoid cross-facet event duplication)
+        // whitelist's transaction don't trigger allowance update.
+        return;
+    } else {
+        // update counters after all checks
+        a.spent += uint128(amount);
+        a.txCount += 1;
+    }
 }

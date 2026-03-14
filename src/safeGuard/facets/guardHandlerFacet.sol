@@ -114,9 +114,9 @@ contract GuardHandlerFacet {
             txContextMod.setTxHash(txHash);
         }
 
-        checkTransactionInner(msg.sender, to, value, data, operation, executor, nonce, txHash, signatures);
-
-        emit CheckTransactionSucceeded(msg.sender, nonce, txHash, operation, value, keccak256(data));
+        //checkTransactionInner(msg.sender, to, value, data, operation, executor, nonce, txHash, signatures);
+        //
+        //emit CheckTransactionSucceeded(msg.sender, nonce, txHash, operation, value, keccak256(data));
     }
 
     // Safe call this function after execute transaction
